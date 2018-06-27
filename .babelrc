@@ -1,0 +1,20 @@
+{
+  "env": {
+    "esm": {
+      "plugins": [
+        "transform-custom-element-classes"
+      ],
+      "presets": [
+        ["es2015", {"modules": false}],
+        "flow"
+      ]
+    },
+    "umd": {
+      "plugins": [
+        "transform-custom-element-classes",
+        "transform-es2015-modules-umd"
+      ],
+      "presets": ["es2015", "flow"]
+    }
+  }
+}

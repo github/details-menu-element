@@ -9,6 +9,10 @@
   "files": [
     "dist"
   ],
+  "keywords": [
+    "details",
+    "menu"
+  ],
   "scripts": {
     "clean": "rm -rf dist",
     "lint": "eslint index.js test/ && flow check",

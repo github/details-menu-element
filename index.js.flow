@@ -1,0 +1,6 @@
+/* @flow */
+
+declare class DetailsMenuElement extends HTMLElement {
+  get src(): string;
+  set src(url: string): void;
+}

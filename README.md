@@ -30,7 +30,7 @@ import '@github/details-menu-element'
 ### Deferred loading
 
 Menu content can be loaded from a server by embedding an
-[`<include-fragment>`][fragment]() element.
+[`<include-fragment>`][fragment] element.
 
 [fragment]: https://github.com/github/include-fragment-element/
 

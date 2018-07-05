@@ -74,8 +74,17 @@ function clicked(event: MouseEvent) {
   if (item) commit(item, details)
 }
 
+function updateChecked(selected: Element, details: Element) {
+  if (!selected.hasAttribute('aria-checked')) return
+  for (const el of details.querySelectorAll('[role="menuitem"][aria-checked]')) {
+    el.setAttribute('aria-checked', 'false')
+  }
+  selected.setAttribute('aria-checked', 'true')
+}
+
 function commit(selected: Element, details: Element) {
   updateLabel(selected, details)
+  updateChecked(selected, details)
   close(details)
   selected.dispatchEvent(new CustomEvent('details-menu-selected', {bubbles: true}))
 }

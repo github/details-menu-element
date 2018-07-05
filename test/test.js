@@ -19,9 +19,9 @@ describe('details-menu element', function() {
         <details>
           <summary>Click</summary>
           <details-menu>
-            <button type="button" role="menuitem">Hubot</button>
-            <button type="button" role="menuitem">Bender</button>
-            <button type="button" role="menuitem">BB-8</button>
+            <button type="button" role="menuitem" aria-checked="false">Hubot</button>
+            <button type="button" role="menuitem" aria-checked="false">Bender</button>
+            <button type="button" role="menuitem" aria-checked="false">BB-8</button>
           </details-menu>
         </details>
       `
@@ -37,7 +37,7 @@ describe('details-menu element', function() {
       const summary = details.querySelector('summary')
 
       summary.focus()
-      summary.dispatchEvent(new MouseEvent('click'))
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert.equal(summary, document.activeElement, 'summary remains focused on toggle')
 
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}))
@@ -46,6 +46,15 @@ describe('details-menu element', function() {
 
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}))
       assert.equal(summary, document.activeElement, 'escape focuses summary')
+    })
+
+    it('manages checked state', function() {
+      const details = document.querySelector('details')
+      const item = details.querySelector('button')
+      assert.equal(item.getAttribute('aria-checked'), 'false')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(item.getAttribute('aria-checked'), 'true')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
     })
   })
 })

@@ -16,12 +16,12 @@ import '@github/details-menu-element'
 
 ```html
 <details>
-  <summary>Robots</summary>
+  <summary>Robot: <span data-menu-button>None</span></summary>
   <details-menu>
     <ul>
-      <li><button type="button" role="menuitem">Hubot</button></li>
-      <li><button type="button" role="menuitem">Bender</button></li>
-      <li><button type="button" role="menuitem">BB-8</button></li>
+      <li><button type="button" role="menuitem" data-menu-button-text>Hubot</button></li>
+      <li><button type="button" role="menuitem" data-menu-button-text>Bender</button></li>
+      <li><button type="button" role="menuitem" data-menu-button-text>BB-8</button></li>
     </ul>
   </details-menu>
 </details>

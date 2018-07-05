@@ -19,9 +19,9 @@ describe('details-menu element', function() {
         <details>
           <summary data-menu-button>Click</summary>
           <details-menu>
-            <button type="button" role="menuitem" aria-checked="false" data-menu-button-text>Hubot</button>
-            <button type="button" role="menuitem" aria-checked="false">Bender</button>
-            <button type="button" role="menuitem" aria-checked="false">BB-8</button>
+            <button type="button" role="menuitem" data-menu-button-text>Hubot</button>
+            <button type="button" role="menuitem">Bender</button>
+            <button type="button" role="menuitem">BB-8</button>
           </details-menu>
         </details>
       `
@@ -48,15 +48,6 @@ describe('details-menu element', function() {
       assert.equal(summary, document.activeElement, 'escape focuses summary')
     })
 
-    it('manages checked state', function() {
-      const details = document.querySelector('details')
-      const item = details.querySelector('button')
-      assert.equal(item.getAttribute('aria-checked'), 'false')
-      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      assert.equal(item.getAttribute('aria-checked'), 'true')
-      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
-    })
-
     it('updates the button label', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
@@ -64,6 +55,36 @@ describe('details-menu element', function() {
       assert.equal(summary.textContent, 'Click')
       item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert.equal(summary.textContent, 'Hubot')
+    })
+  })
+
+  describe('mutually exclusive menu items', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Click</summary>
+          <details-menu>
+            <button type="button" role="menuitemradio" aria-checked="false">Hubot</button>
+            <button type="button" role="menuitemradio" aria-checked="false">Bender</button>
+            <button type="button" role="menuitemradio" aria-checked="false">BB-8</button>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('manages checked state', function() {
+      const details = document.querySelector('details')
+      const item = details.querySelector('button')
+      assert.equal(item.getAttribute('aria-checked'), 'false')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(item.getAttribute('aria-checked'), 'true')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
     })
   })
 })

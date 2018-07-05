@@ -75,8 +75,8 @@ function clicked(event: MouseEvent) {
 }
 
 function updateChecked(selected: Element, details: Element) {
-  if (!selected.hasAttribute('aria-checked')) return
-  for (const el of details.querySelectorAll('[role="menuitem"][aria-checked]')) {
+  if (selected.getAttribute('role') !== 'menuitemradio') return
+  for (const el of details.querySelectorAll('[role="menuitemradio"]')) {
     el.setAttribute('aria-checked', 'false')
   }
   selected.setAttribute('aria-checked', 'true')

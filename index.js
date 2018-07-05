@@ -50,7 +50,7 @@ function focusInput(details: Element) {
 }
 
 function sibling(details: Element, next: boolean): HTMLElement {
-  const options = Array.from(details.querySelectorAll('[role="menuitem"]:not([hidden])'))
+  const options = Array.from(details.querySelectorAll('[role^="menuitem"]:not([hidden])'))
   const selected = document.activeElement
   const index = options.indexOf(selected)
   const sibling = next ? options[index + 1] : options[index - 1]
@@ -70,7 +70,7 @@ function clicked(event: MouseEvent) {
   // Ignore clicks from nested details.
   if (target.closest('details') !== details) return
 
-  const item = target.closest('[role="menuitem"]')
+  const item = target.closest('[role^="menuitem"]')
   if (item) commit(item, details)
 }
 
@@ -124,7 +124,7 @@ function keydown(event: KeyboardEvent) {
     case 'Enter':
       {
         const selected = document.activeElement
-        if (selected && selected.getAttribute('role') === 'menuitem' && selected.closest('details') === details) {
+        if (selected && isMenuItem(selected) && selected.closest('details') === details) {
           event.preventDefault()
           event.stopPropagation()
           commit(selected, details)
@@ -133,6 +133,11 @@ function keydown(event: KeyboardEvent) {
       }
       break
   }
+}
+
+function isMenuItem(el: Element): boolean {
+  const role = el.getAttribute('role')
+  return role === 'menuitem' || role === 'menuitemcheckbox' || role === 'menuitemradio'
 }
 
 function close(details: Element) {

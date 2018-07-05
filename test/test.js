@@ -17,9 +17,9 @@ describe('details-menu element', function() {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
-          <summary>Click</summary>
+          <summary data-menu-button>Click</summary>
           <details-menu>
-            <button type="button" role="menuitem" aria-checked="false">Hubot</button>
+            <button type="button" role="menuitem" aria-checked="false" data-menu-button-text>Hubot</button>
             <button type="button" role="menuitem" aria-checked="false">Bender</button>
             <button type="button" role="menuitem" aria-checked="false">BB-8</button>
           </details-menu>
@@ -55,6 +55,15 @@ describe('details-menu element', function() {
       item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert.equal(item.getAttribute('aria-checked'), 'true')
       assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
+    })
+
+    it('updates the button label', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const item = details.querySelector('button')
+      assert.equal(summary.textContent, 'Click')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(summary.textContent, 'Hubot')
     })
   })
 })

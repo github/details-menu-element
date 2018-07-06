@@ -27,6 +27,21 @@ import '@github/details-menu-element'
 </details>
 ```
 
+Use `data-menu-button` and `data-menu-button-text` to have button text updated on menu item activiation.
+
+```html
+<details>
+  <summary>Preferred robot: <span data-menu-button>None</span></summary>
+  <details-menu>
+    <ul>
+      <li><button type="button" role="menuitem" data-menu-button-text>Hubot</button></li>
+      <li><button type="button" role="menuitem" data-menu-button-text>Bender</button></li>
+      <li><button type="button" role="menuitem" data-menu-button-text>BB-8</button></li>
+    </ul>
+  </details-menu>
+</details>
+```
+
 ### Deferred loading
 
 Menu content can be loaded from a server by embedding an

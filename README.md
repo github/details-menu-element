@@ -27,7 +27,7 @@ import '@github/details-menu-element'
 </details>
 ```
 
-Use `data-menu-button` and `data-menu-button-text` to have button text replaced on menu item activiation.
+Use `data-menu-button` and `data-menu-button-text` to have button text updated on menu item activiation.
 
 ```html
 <details>

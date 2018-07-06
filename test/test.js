@@ -17,9 +17,9 @@ describe('details-menu element', function() {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
-          <summary>Click</summary>
+          <summary data-menu-button>Click</summary>
           <details-menu>
-            <button type="button" role="menuitem">Hubot</button>
+            <button type="button" role="menuitem" data-menu-button-text>Hubot</button>
             <button type="button" role="menuitem">Bender</button>
             <button type="button" role="menuitem">BB-8</button>
           </details-menu>
@@ -37,7 +37,7 @@ describe('details-menu element', function() {
       const summary = details.querySelector('summary')
 
       summary.focus()
-      summary.dispatchEvent(new MouseEvent('click'))
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert.equal(summary, document.activeElement, 'summary remains focused on toggle')
 
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}))
@@ -46,6 +46,45 @@ describe('details-menu element', function() {
 
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}))
       assert.equal(summary, document.activeElement, 'escape focuses summary')
+    })
+
+    it('updates the button label', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const item = details.querySelector('button')
+      assert.equal(summary.textContent, 'Click')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(summary.textContent, 'Hubot')
+    })
+  })
+
+  describe('mutually exclusive menu items', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Click</summary>
+          <details-menu>
+            <button type="button" role="menuitemradio" aria-checked="false">Hubot</button>
+            <button type="button" role="menuitemradio" aria-checked="false">Bender</button>
+            <button type="button" role="menuitemradio" aria-checked="false">BB-8</button>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('manages checked state', function() {
+      const details = document.querySelector('details')
+      const item = details.querySelector('button')
+      assert.equal(item.getAttribute('aria-checked'), 'false')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(item.getAttribute('aria-checked'), 'true')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
     })
   })
 })

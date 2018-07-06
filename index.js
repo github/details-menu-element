@@ -74,10 +74,18 @@ function clicked(event: MouseEvent) {
   if (item) commit(item, details)
 }
 
+function isCheckable(el: Element) {
+  const role = el.getAttribute('role')
+  return role === 'menuitemradio' || role === 'menuitemcheckbox'
+}
+
 function updateChecked(selected: Element, details: Element) {
-  if (selected.getAttribute('role') !== 'menuitemradio') return
-  for (const el of details.querySelectorAll('[role="menuitemradio"]')) {
-    el.setAttribute('aria-checked', 'false')
+  if (!isCheckable(selected)) return
+
+  if (selected.getAttribute('role') === 'menuitemradio') {
+    for (const el of details.querySelectorAll('[role="menuitemradio"]')) {
+      el.setAttribute('aria-checked', 'false')
+    }
   }
   selected.setAttribute('aria-checked', 'true')
 }

@@ -16,7 +16,22 @@ import '@github/details-menu-element'
 
 ```html
 <details>
-  <summary>Robot: <span data-menu-button>None</span></summary>
+  <summary>Robots</summary>
+  <details-menu>
+    <ul>
+      <li><button type="button" role="menuitem">Hubot</button></li>
+      <li><button type="button" role="menuitem">Bender</button></li>
+      <li><button type="button" role="menuitem">BB-8</button></li>
+    </ul>
+  </details-menu>
+</details>
+```
+
+Use `data-menu-button` and `data-menu-button-text` to have button text replaced on menu item activiation.
+
+```html
+<details>
+  <summary>Preferred robot: <span data-menu-button>None</span></summary>
   <details-menu>
     <ul>
       <li><button type="button" role="menuitem" data-menu-button-text>Hubot</button></li>

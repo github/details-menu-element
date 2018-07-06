@@ -74,7 +74,7 @@ function clicked(event: MouseEvent) {
   if (item) commit(item, details)
 }
 
-function isCheckable(el: Element) {
+function isCheckable(el: Element): boolean {
   const role = el.getAttribute('role')
   return role === 'menuitemradio' || role === 'menuitemcheckbox'
 }

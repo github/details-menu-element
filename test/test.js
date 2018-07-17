@@ -87,4 +87,60 @@ describe('details-menu element', function() {
       assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
     })
   })
+
+  describe('opening the menu', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details class="parent">
+          <summary>Menu 1</summary>
+          <details-menu>
+            <details class="nested">
+              <summary>Menu 2</summary>
+              <details-menu></details-menu>
+            </details>
+          </details-menu>
+        </details>
+        <details class="sibling">
+          <summary>Menu 3</summary>
+          <details-menu></details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('closes other open menus', function() {
+      const parent = document.querySelector('.parent')
+      const sibling = document.querySelector('.sibling')
+
+      parent.open = true
+      parent.dispatchEvent(new CustomEvent('toggle'))
+      assert(parent.open)
+
+      sibling.open = true
+      sibling.dispatchEvent(new CustomEvent('toggle'))
+
+      assert(sibling.open)
+      assert(!parent.open)
+    })
+
+    it('does not close open parent menu', function() {
+      const parent = document.querySelector('.parent')
+      const nested = document.querySelector('.nested')
+
+      parent.open = true
+      parent.dispatchEvent(new CustomEvent('toggle'))
+      assert(parent.open)
+
+      nested.open = true
+      nested.dispatchEvent(new CustomEvent('toggle'))
+
+      assert(nested.open)
+      assert(parent.open)
+    })
+  })
 })

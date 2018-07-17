@@ -37,7 +37,21 @@ class DetailsMenuElement extends HTMLElement {
       {once: true}
     )
 
+    details.addEventListener('toggle', closeCurrentMenu)
     details.addEventListener('toggle', focusInput.bind(null, details))
+  }
+}
+
+function closeCurrentMenu(event) {
+  const el = event.currentTarget
+  if (!(el instanceof Element)) return
+  if (!el.hasAttribute('open')) return
+
+  for (const menu of document.querySelectorAll('details[open] > details-menu')) {
+    const opened = menu.closest('details')
+    if (opened && opened !== el && !opened.contains(el)) {
+      opened.removeAttribute('open')
+    }
   }
 }
 

@@ -20,7 +20,7 @@ class DetailsMenuElement extends HTMLElement {
     if (!details) return
 
     const summary = details.querySelector('summary')
-    if (summary) summary.setAttribute('aria-haspopup', 'true')
+    if (summary) summary.setAttribute('aria-haspopup', 'menu')
 
     details.addEventListener('click', clicked)
     details.addEventListener('keydown', keydown)

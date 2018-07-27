@@ -193,8 +193,7 @@ function labelHTML(el: ?Element): ?string {
   if (!el) return null
   const contentsEl = el.hasAttribute('data-menu-button-contents') ? el : el.querySelector('[data-menu-button-contents]')
 
-  if (!contentsEl) return null
-  return contentsEl.innerHTML
+  return contentsEl ? contentsEl.innerHTML : null
 }
 
 export default DetailsMenuElement

@@ -172,15 +172,15 @@ function updateLabel(item: Element, details: Element) {
   const button = details.querySelector('[data-menu-button]')
   if (!button) return
 
-  const text = label(item) || label(item.querySelector('[data-menu-button-text]'))
-  if (text) button.textContent = text
+  const content = label(item) || label(item.querySelector('[data-menu-button-text]'))
+  if (content) button.innerHTML = content
 }
 
 function label(el: ?Element): ?string {
   if (!el) return null
   const text = el.getAttribute('data-menu-button-text')
   if (text == null) return null
-  return text === '' ? el.textContent : text
+  return text === '' ? el.innerHTML : text
 }
 
 export default DetailsMenuElement

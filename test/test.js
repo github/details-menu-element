@@ -20,7 +20,7 @@ describe('details-menu element', function() {
           <summary data-menu-button>Click</summary>
           <details-menu>
             <button type="button" role="menuitem" data-menu-button-text>Hubot</button>
-            <button type="button" role="menuitem">Bender</button>
+            <button type="button" role="menuitem" data-menu-button-contents><strong>Bender</strong></button>
             <button type="button" role="menuitem">BB-8</button>
           </details-menu>
         </details>
@@ -48,13 +48,22 @@ describe('details-menu element', function() {
       assert.equal(summary, document.activeElement, 'escape focuses summary')
     })
 
-    it('updates the button label', function() {
+    it('updates the button label with text', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       const item = details.querySelector('button')
       assert.equal(summary.textContent, 'Click')
       item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert.equal(summary.textContent, 'Hubot')
+    })
+
+    it('updates the button label with HTML', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const item = details.querySelector('[data-menu-button-contents]')
+      assert.equal(summary.textContent, 'Click')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(summary.innerHTML, '<strong>Bender</strong>')
     })
   })
 

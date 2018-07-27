@@ -172,15 +172,29 @@ function updateLabel(item: Element, details: Element) {
   const button = details.querySelector('[data-menu-button]')
   if (!button) return
 
-  const text = label(item) || label(item.querySelector('[data-menu-button-text]'))
-  if (text) button.textContent = text
+  const text = labelText(item)
+  if (text) {
+    button.textContent = text
+  } else {
+    const html = labelHTML(item)
+    if (html) button.innerHTML = html
+  }
 }
 
-function label(el: ?Element): ?string {
+function labelText(el: ?Element): ?string {
   if (!el) return null
-  const text = el.getAttribute('data-menu-button-text')
-  if (text == null) return null
-  return text === '' ? el.textContent : text
+  const textEl = el.hasAttribute('data-menu-button-text') ? el : el.querySelector('[data-menu-button-text]')
+
+  if (!textEl) return null
+  return textEl.getAttribute('data-menu-button-text') || textEl.textContent
+}
+
+function labelHTML(el: ?Element): ?string {
+  if (!el) return null
+  const contentsEl = el.hasAttribute('data-menu-button-contents') ? el : el.querySelector('[data-menu-button-contents]')
+
+  if (!contentsEl) return null
+  return contentsEl.innerHTML
 }
 
 export default DetailsMenuElement

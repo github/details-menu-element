@@ -105,6 +105,8 @@ function updateChecked(selected: Element, details: Element) {
 }
 
 function commit(selected: Element, details: Element) {
+  if (selected.getAttribute('aria-disabled') === 'true') return
+
   updateLabel(selected, details)
   updateChecked(selected, details)
   close(details)

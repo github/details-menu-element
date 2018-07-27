@@ -17,7 +17,7 @@ describe('details-menu element', function() {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
-          <summary data-menu-button>Click</summary>
+          <summary data-menu-button><em>Click</em></summary>
           <details-menu>
             <button type="button" role="menuitem" data-menu-button-text>Hubot</button>
             <button type="button" role="menuitem" data-menu-button-contents><strong>Bender</strong></button>

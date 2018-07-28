@@ -76,9 +76,10 @@ describe('details-menu element', function() {
       summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}))
 
-      const disabled = details.querySelector('[aria-disabled="true"]')
-      assert.equal(disabled, document.activeElement, 'arrow focuses the disabled item')
+      const notDisabled = details.querySelectorAll('[role="menuitem"]')[2]
+      assert.equal(notDisabled, document.activeElement, 'arrow focuses on the last non-disabled item')
 
+      const disabled = details.querySelector('[aria-disabled="true"]')
       disabled.addEventListener('details-menu-selected', () => eventCounter++)
       disabled.dispatchEvent(new MouseEvent('click', {bubbles: true}))
 

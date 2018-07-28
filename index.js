@@ -64,7 +64,9 @@ function focusInput(details: Element) {
 }
 
 function sibling(details: Element, next: boolean): HTMLElement {
-  const options = Array.from(details.querySelectorAll('[role^="menuitem"]:not([hidden])'))
+  const options = Array.from(
+    details.querySelectorAll('[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])')
+  )
   const selected = document.activeElement
   const index = options.indexOf(selected)
   const sibling = next ? options[index + 1] : options[index - 1]

@@ -109,6 +109,9 @@ function updateChecked(selected: Element, details: Element) {
 function commit(selected: Element, details: Element) {
   if (selected.getAttribute('aria-disabled') === 'true') return
 
+  const dispatched = selected.dispatchEvent(new CustomEvent('details-menu-select', {bubbles: true, cancelable: true}))
+  if (!dispatched) return
+
   updateLabel(selected, details)
   updateChecked(selected, details)
   close(details)

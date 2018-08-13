@@ -67,6 +67,52 @@ describe('details-menu element', function() {
       assert.equal(summary.innerHTML, '<strong>Bender</strong>')
     })
 
+    it('fires events in order', function(done) {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const item = details.querySelector('button')
+
+      item.addEventListener('details-menu-select', () => {
+        assert(details.open, 'menu is still open')
+        assert.equal(summary.textContent, 'Click')
+      })
+
+      item.addEventListener('details-menu-selected', () => {
+        assert(!details.open, 'menu is closed')
+        assert.equal(summary.textContent, 'Hubot')
+        done()
+      })
+
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert(details.open)
+    })
+
+    it('fires cancellable select event', function(done) {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const item = details.querySelector('button')
+      let selectedEventCounter = 0
+
+      item.addEventListener('details-menu-select', event => {
+        event.preventDefault()
+        assert(details.open, 'menu is still open')
+        assert.equal(summary.textContent, 'Click')
+        setTimeout(() => {
+          assert.equal(selectedEventCounter, 0, 'selected event is not fired')
+          done()
+        }, 0)
+      })
+
+      item.addEventListener('details-menu-selected', () => {
+        selectedEventCounter++
+      })
+
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert(details.open)
+    })
+
     it('does not trigger disabled item', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')

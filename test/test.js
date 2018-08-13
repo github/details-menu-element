@@ -164,6 +164,39 @@ describe('details-menu element', function() {
     })
   })
 
+  describe('menu item checkboxes', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Click</summary>
+          <details-menu>
+            <button type="button" role="menuitemcheckbox" aria-checked="false">Hubot</button>
+            <button type="button" role="menuitemcheckbox" aria-checked="true">Bender</button>
+            <button type="button" role="menuitemcheckbox" aria-checked="false">BB-8</button>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('manages checked state and menu stays open', function() {
+      const details = document.querySelector('details')
+      const summary = document.querySelector('summary')
+      const item = details.querySelector('button')
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert(details.open, 'menu opens')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert(details.open, 'menu stays open')
+      assert.equal(item.getAttribute('aria-checked'), 'true')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 2)
+    })
+  })
+
   describe('opening the menu', function() {
     beforeEach(function() {
       const container = document.createElement('div')

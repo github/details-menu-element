@@ -114,7 +114,7 @@ function commit(selected: Element, details: Element) {
 
   updateLabel(selected, details)
   updateChecked(selected, details)
-  close(details)
+  if (selected.getAttribute('role') !== 'menuitemcheckbox') close(details)
   selected.dispatchEvent(new CustomEvent('details-menu-selected', {bubbles: true}))
 }
 

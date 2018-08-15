@@ -67,6 +67,52 @@ describe('details-menu element', function() {
       assert.equal(summary.innerHTML, '<strong>Bender</strong>')
     })
 
+    it('fires events in order', function(done) {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const item = details.querySelector('button')
+
+      item.addEventListener('details-menu-select', () => {
+        assert(details.open, 'menu is still open')
+        assert.equal(summary.textContent, 'Click')
+      })
+
+      item.addEventListener('details-menu-selected', () => {
+        assert(!details.open, 'menu is closed')
+        assert.equal(summary.textContent, 'Hubot')
+        done()
+      })
+
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert(details.open)
+    })
+
+    it('fires cancellable select event', function(done) {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const item = details.querySelector('button')
+      let selectedEventCounter = 0
+
+      item.addEventListener('details-menu-select', event => {
+        event.preventDefault()
+        assert(details.open, 'menu is still open')
+        assert.equal(summary.textContent, 'Click')
+        setTimeout(() => {
+          assert.equal(selectedEventCounter, 0, 'selected event is not fired')
+          done()
+        }, 0)
+      })
+
+      item.addEventListener('details-menu-selected', () => {
+        selectedEventCounter++
+      })
+
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert(details.open)
+    })
+
     it('does not trigger disabled item', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
@@ -115,6 +161,39 @@ describe('details-menu element', function() {
       item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert.equal(item.getAttribute('aria-checked'), 'true')
       assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
+    })
+  })
+
+  describe('menu item checkboxes', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Click</summary>
+          <details-menu>
+            <button type="button" role="menuitemcheckbox" aria-checked="false">Hubot</button>
+            <button type="button" role="menuitemcheckbox" aria-checked="true">Bender</button>
+            <button type="button" role="menuitemcheckbox" aria-checked="false">BB-8</button>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('manages checked state and menu stays open', function() {
+      const details = document.querySelector('details')
+      const summary = document.querySelector('summary')
+      const item = details.querySelector('button')
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert(details.open, 'menu opens')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert(details.open, 'menu stays open')
+      assert.equal(item.getAttribute('aria-checked'), 'true')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 2)
     })
   })
 

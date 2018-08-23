@@ -156,7 +156,6 @@ function keydown(event: KeyboardEvent) {
         if (selected && isMenuItem(selected) && selected.closest('details') === details) {
           event.preventDefault()
           event.stopPropagation()
-          commit(selected, details)
           selected.click()
         }
       }

@@ -23,6 +23,7 @@ describe('details-menu element', function() {
             <button type="button" role="menuitem" data-menu-button-contents><strong>Bender</strong></button>
             <button type="button" role="menuitem">BB-8</button>
             <button type="button" role="menuitem" data-menu-button-text aria-disabled="true">WALL-E</button>
+            <button type="button" role="menuitem" disabled>R2-D2</button>
           </details-menu>
         </details>
       `
@@ -113,7 +114,7 @@ describe('details-menu element', function() {
       assert(details.open)
     })
 
-    it('does not trigger disabled item', function() {
+    it('does not trigger aria-disabled item', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       let eventCounter = 0
@@ -126,6 +127,23 @@ describe('details-menu element', function() {
       assert.equal(notDisabled, document.activeElement, 'arrow focuses on the last non-disabled item')
 
       const disabled = details.querySelector('[aria-disabled="true"]')
+      disabled.addEventListener('details-menu-selected', () => eventCounter++)
+      disabled.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+
+      assert.equal(eventCounter, 0, 'selected event is not fired')
+      assert(details.open, 'menu stays open')
+    })
+
+    it('does not trigger disabled item', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      let eventCounter = 0
+
+      summary.focus()
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}))
+
+      const disabled = details.querySelector('[disabled]')
       disabled.addEventListener('details-menu-selected', () => eventCounter++)
       disabled.dispatchEvent(new MouseEvent('click', {bubbles: true}))
 

@@ -124,34 +124,41 @@ function keydown(event: KeyboardEvent) {
   // Ignore key presses from nested details.
   if (details.querySelector('details[open]')) return
 
-  let target
   switch (event.key) {
     case 'Escape':
       close(details)
       event.preventDefault()
       break
     case 'ArrowDown':
-      target = sibling(details, true)
-      if (target) target.focus()
-      event.preventDefault()
-      break
-    case 'ArrowUp':
-      target = sibling(details, false)
-      if (target) target.focus()
-      event.preventDefault()
-      break
-    case 'n':
-      if (ctrlBindings && event.ctrlKey) {
-        target = sibling(details, true)
+      {
+        const target = sibling(details, true)
         if (target) target.focus()
         event.preventDefault()
       }
       break
-    case 'p':
-      if (ctrlBindings && event.ctrlKey) {
-        target = sibling(details, false)
+    case 'ArrowUp':
+      {
+        const target = sibling(details, false)
         if (target) target.focus()
         event.preventDefault()
+      }
+      break
+    case 'n':
+      {
+        if (ctrlBindings && event.ctrlKey) {
+          const target = sibling(details, true)
+          if (target) target.focus()
+          event.preventDefault()
+        }
+      }
+      break
+    case 'p':
+      {
+        if (ctrlBindings && event.ctrlKey) {
+          const target = sibling(details, false)
+          if (target) target.focus()
+          event.preventDefault()
+        }
       }
       break
     case ' ':

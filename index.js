@@ -63,7 +63,7 @@ function focusInput(details: Element) {
   }
 }
 
-function sibling(details: Element, next: boolean): HTMLElement {
+function sibling(details: Element, next: boolean): ?HTMLElement {
   const options = Array.from(
     details.querySelectorAll('[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])')
   )
@@ -130,23 +130,35 @@ function keydown(event: KeyboardEvent) {
       event.preventDefault()
       break
     case 'ArrowDown':
-      sibling(details, true).focus()
-      event.preventDefault()
-      break
-    case 'ArrowUp':
-      sibling(details, false).focus()
-      event.preventDefault()
-      break
-    case 'n':
-      if (ctrlBindings && event.ctrlKey) {
-        sibling(details, true).focus()
+      {
+        const target = sibling(details, true)
+        if (target) target.focus()
         event.preventDefault()
       }
       break
-    case 'p':
-      if (ctrlBindings && event.ctrlKey) {
-        sibling(details, false).focus()
+    case 'ArrowUp':
+      {
+        const target = sibling(details, false)
+        if (target) target.focus()
         event.preventDefault()
+      }
+      break
+    case 'n':
+      {
+        if (ctrlBindings && event.ctrlKey) {
+          const target = sibling(details, true)
+          if (target) target.focus()
+          event.preventDefault()
+        }
+      }
+      break
+    case 'p':
+      {
+        if (ctrlBindings && event.ctrlKey) {
+          const target = sibling(details, false)
+          if (target) target.focus()
+          event.preventDefault()
+        }
       }
       break
     case ' ':

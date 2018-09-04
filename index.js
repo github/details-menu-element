@@ -63,7 +63,7 @@ function focusInput(details: Element) {
   }
 }
 
-function sibling(details: Element, next: boolean): HTMLElement {
+function sibling(details: Element, next: boolean): ?HTMLElement {
   const options = Array.from(
     details.querySelectorAll('[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])')
   )
@@ -124,28 +124,33 @@ function keydown(event: KeyboardEvent) {
   // Ignore key presses from nested details.
   if (details.querySelector('details[open]')) return
 
+  let target
   switch (event.key) {
     case 'Escape':
       close(details)
       event.preventDefault()
       break
     case 'ArrowDown':
-      sibling(details, true).focus()
+      target = sibling(details, true)
+      if (target) target.focus()
       event.preventDefault()
       break
     case 'ArrowUp':
-      sibling(details, false).focus()
+      target = sibling(details, false)
+      if (target) target.focus()
       event.preventDefault()
       break
     case 'n':
       if (ctrlBindings && event.ctrlKey) {
-        sibling(details, true).focus()
+        target = sibling(details, true)
+        if (target) target.focus()
         event.preventDefault()
       }
       break
     case 'p':
       if (ctrlBindings && event.ctrlKey) {
-        sibling(details, false).focus()
+        target = sibling(details, false)
+        if (target) target.focus()
         event.preventDefault()
       }
       break

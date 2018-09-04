@@ -215,6 +215,38 @@ describe('details-menu element', function() {
     })
   })
 
+  describe('with no valid menu items', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Click</summary>
+          <details-menu>
+            <button type="button" role="menuitem" aria-disabled="true">Hubot</button>
+            <button type="button" role="menuitem" disabled>Bender</button>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('focus stays on summary', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+
+      summary.focus()
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(summary, document.activeElement, 'summary remains focused on toggle')
+
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}))
+      assert.equal(summary, document.activeElement, 'summary remains focused on navigation')
+    })
+  })
+
   describe('opening the menu', function() {
     beforeEach(function() {
       const container = document.createElement('div')

@@ -1,5 +1,8 @@
 /* @flow */
 
+let typing = null
+let typingTimeoutID = null
+
 class DetailsMenuElement extends HTMLElement {
   constructor() {
     super()
@@ -63,10 +66,46 @@ function focusInput(details: Element) {
   }
 }
 
+function handleTyping(event: KeyboardEvent) {
+  const summary = event.currentTarget
+  if (!(summary instanceof HTMLElement)) return
+  const details = summary.closest('details')
+  if (!details) return
+  if (!event.key.match(/^[A-z0-9]{1}$/)) {
+    typing = null
+    return
+  }
+
+  if (!typing) typing = '^'
+  if (!event.metaKey && !event.ctrlKey && !event.shiftKey) typing += event.key
+
+  if (typingTimeoutID) {
+    clearTimeout(typingTimeoutID)
+    typingTimeoutID = null
+  }
+
+  typingTimeoutID = setTimeout(() => {
+    typing = null
+  }, 500)
+  const target = findElementByString(details, new RegExp(typing, 'i'))
+  if (target) {
+    details.setAttribute('open', 'open')
+    target.focus()
+  }
+}
+
+function menuitems(details: Element): NodeList<HTMLElement> {
+  return details.querySelectorAll('[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])')
+}
+
+function findElementByString(details: Element, regex: RegExp): ?HTMLElement {
+  for (const item of menuitems(details)) {
+    if (item.textContent.match(regex)) return item
+  }
+}
+
 function sibling(details: Element, next: boolean): ?HTMLElement {
-  const options = Array.from(
-    details.querySelectorAll('[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])')
-  )
+  const options = Array.from(menuitems(details))
   const selected = document.activeElement
   const index = options.indexOf(selected)
   const sibling = next ? options[index + 1] : options[index - 1]
@@ -172,6 +211,8 @@ function keydown(event: KeyboardEvent) {
         }
       }
       break
+    default:
+      handleTyping(event)
   }
 }
 

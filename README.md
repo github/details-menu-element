@@ -42,6 +42,11 @@ Use `data-menu-button` and `data-menu-button-text` to have button text updated o
 </details>
 ```
 
+### Events
+
+- `details-menu-select` - An item is to be select (cancelable).
+- `details-menu-selected` - An item is selected, label updated, menu closed.
+
 ### Deferred loading
 
 Menu content can be loaded from a server by embedding an

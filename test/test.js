@@ -182,7 +182,7 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('menu item checkboxes', function() {
+  describe('with buttons as menu item checkboxes', function() {
     beforeEach(function() {
       const container = document.createElement('div')
       container.innerHTML = `
@@ -212,6 +212,48 @@ describe('details-menu element', function() {
       assert(details.open, 'menu stays open')
       assert.equal(item.getAttribute('aria-checked'), 'true')
       assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 2)
+    })
+  })
+
+  describe('with labels as menu item checkboxes', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Click</summary>
+          <details-menu>
+            <label tabindex="0" role="menuitemcheckbox" aria-checked="false"><input type="checkbox" name="robot"> Hubot</label>
+            <label tabindex="0" role="menuitemcheckbox" aria-checked="true"><input type="checkbox" name="robot" checked> Bender</label>
+            <label tabindex="0" role="menuitemcheckbox" aria-checked="false"><input type="checkbox" name="robot"> BB-8</label>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('manages checked state and fires events', function() {
+      const details = document.querySelector('details')
+      const summary = document.querySelector('summary')
+      const item = details.querySelector('label')
+      let eventCounter = 0
+      details.addEventListener('details-menu-selected', () => eventCounter++)
+
+      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert(details.open, 'menu opens')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert(details.open, 'menu stays open')
+      assert.equal(item.getAttribute('aria-checked'), 'true')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 2)
+
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(item.getAttribute('aria-checked'), 'false')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
+
+      assert.equal(eventCounter, 2, 'selected event is fired twice')
     })
   })
 

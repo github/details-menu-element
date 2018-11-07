@@ -87,7 +87,11 @@ function clicked(event: MouseEvent) {
   if (target.closest('details') !== details) return
 
   const item = target.closest('[role^="menuitem"]')
-  if (item) commit(item, details)
+  if (item && !ignoreLabelClick(target)) commit(item, details)
+}
+
+function ignoreLabelClick(el: Element): boolean {
+  return el.tagName === 'LABEL' && !!el.querySelector('input[type=checkbox], input[type=radio]')
 }
 
 function isCheckable(el: Element): boolean {
@@ -97,13 +101,16 @@ function isCheckable(el: Element): boolean {
 
 function updateChecked(selected: Element, details: Element) {
   if (!isCheckable(selected)) return
+  const isRadio = selected.getAttribute('role') === 'menuitemradio'
+  const wasChecked = selected.getAttribute('aria-checked') === 'true'
 
-  if (selected.getAttribute('role') === 'menuitemradio') {
+  if (isRadio) {
     for (const el of details.querySelectorAll('[role="menuitemradio"]')) {
       el.setAttribute('aria-checked', 'false')
     }
   }
-  selected.setAttribute('aria-checked', 'true')
+
+  selected.setAttribute('aria-checked', isRadio || !wasChecked ? 'true' : 'false')
 }
 
 function commit(selected: Element, details: Element) {

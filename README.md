@@ -42,6 +42,27 @@ Use `data-menu-button` and `data-menu-button-text` to have button text updated o
 </details>
 ```
 
+Use `label[tabindex="0"][role=menuitemradio/menuitemcheckbox]` when dealing with radio and checkbox inputs menu items. Check states of the input element and the label will be synchronized.
+
+```html
+<details>
+  <summary>Preferred robot</summary>
+  <details-menu>
+    <ul>
+      <li><label tabindex="0" role="menuitemradio">
+        <input type="radio" name="robot" value="Hubot"> Hubot
+      </label></li>
+      <li><label tabindex="0" role="menuitemradio">
+        <input type="radio" name="robot" value="Bender"> Bender
+      </label></li>
+      <li><label tabindex="0" role="menuitemradio">
+        <input type="radio" name="robot" value="BB-8"> BB-8
+      </label></li>
+    </ul>
+  </details-menu>
+</details>
+```
+
 ### Events
 
 - `details-menu-select` - An item is to be select (cancelable).

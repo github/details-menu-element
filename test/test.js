@@ -159,9 +159,9 @@ describe('details-menu element', function() {
         <details>
           <summary>Click</summary>
           <details-menu>
-            <button type="button" role="menuitemradio" aria-checked="false">Hubot</button>
-            <button type="button" role="menuitemradio" aria-checked="false">Bender</button>
-            <button type="button" role="menuitemradio" aria-checked="false">BB-8</button>
+            <label tabindex="0" role="menuitemradio" aria-checked="false"><input value="Hubot" name="robot" type="radio"> Hubot</label>
+            <label tabindex="0" role="menuitemradio" aria-checked="false"><input value="Bender" name="robot" type="radio"> Bender</label>
+            <label tabindex="0" role="menuitemradio" aria-checked="false"><input value="BB-8" name="robot" type="radio"> BB-8</label>
           </details-menu>
         </details>
       `
@@ -174,7 +174,7 @@ describe('details-menu element', function() {
 
     it('manages checked state', function() {
       const details = document.querySelector('details')
-      const item = details.querySelector('button')
+      const item = details.querySelector('label')
       assert.equal(item.getAttribute('aria-checked'), 'false')
       item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert.equal(item.getAttribute('aria-checked'), 'true')
@@ -182,16 +182,16 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('menu item checkboxes', function() {
+  describe('with labels as menu item checkboxes', function() {
     beforeEach(function() {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
           <summary>Click</summary>
           <details-menu>
-            <button type="button" role="menuitemcheckbox" aria-checked="false">Hubot</button>
-            <button type="button" role="menuitemcheckbox" aria-checked="true">Bender</button>
-            <button type="button" role="menuitemcheckbox" aria-checked="false">BB-8</button>
+            <label tabindex="0" role="menuitemcheckbox" aria-checked="false"><input type="checkbox" name="robot"> Hubot</label>
+            <label tabindex="0" role="menuitemcheckbox" aria-checked="true"><input type="checkbox" name="robot" checked> Bender</label>
+            <label tabindex="0" role="menuitemcheckbox" aria-checked="false"><input type="checkbox" name="robot"> BB-8</label>
           </details-menu>
         </details>
       `
@@ -202,16 +202,25 @@ describe('details-menu element', function() {
       document.body.innerHTML = ''
     })
 
-    it('manages checked state and menu stays open', function() {
+    it('manages checked state and fires events', function() {
       const details = document.querySelector('details')
       const summary = document.querySelector('summary')
-      const item = details.querySelector('button')
+      const item = details.querySelector('label')
+      let eventCounter = 0
+      details.addEventListener('details-menu-selected', () => eventCounter++)
+
       summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert(details.open, 'menu opens')
       item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert(details.open, 'menu stays open')
       assert.equal(item.getAttribute('aria-checked'), 'true')
       assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 2)
+
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(item.getAttribute('aria-checked'), 'false')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
+
+      assert.equal(eventCounter, 2, 'selected event is fired twice')
     })
   })
 

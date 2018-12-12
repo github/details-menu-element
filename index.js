@@ -22,7 +22,8 @@ class DetailsMenuElement extends HTMLElement {
     const summary = details.querySelector('summary')
     if (summary) summary.setAttribute('aria-haspopup', 'menu')
 
-    details.addEventListener('click', clicked)
+    details.addEventListener('click', shouldCommit)
+    details.addEventListener('change', shouldCommit)
     details.addEventListener('keydown', keydown)
     details.addEventListener(
       'toggle',
@@ -76,7 +77,7 @@ function sibling(details: Element, next: boolean): ?HTMLElement {
 
 const ctrlBindings = navigator.userAgent.match(/Macintosh/)
 
-function clicked(event: MouseEvent) {
+function shouldCommit(event: Event) {
   const target = event.target
   if (!(target instanceof Element)) return
 
@@ -86,24 +87,19 @@ function clicked(event: MouseEvent) {
   // Ignore clicks from nested details.
   if (target.closest('details') !== details) return
 
-  const item = target.closest('[role^="menuitem"]')
-  if (item) commit(item, details)
+  const menuitem =
+    event.type === 'click'
+      ? target.closest('[role="menuitem"]')
+      : target.closest('[role="menuitemradio"], [role="menuitemcheckbox"]')
+  if (menuitem) commit(menuitem, details)
 }
 
-function isCheckable(el: Element): boolean {
-  const role = el.getAttribute('role')
-  return role === 'menuitemradio' || role === 'menuitemcheckbox'
-}
-
-function updateChecked(selected: Element, details: Element) {
-  if (!isCheckable(selected)) return
-
-  if (selected.getAttribute('role') === 'menuitemradio') {
-    for (const el of details.querySelectorAll('[role="menuitemradio"]')) {
-      el.setAttribute('aria-checked', 'false')
-    }
+function updateChecked(details: Element) {
+  for (const el of details.querySelectorAll('[role="menuitemradio"], [role="menuitemcheckbox"]')) {
+    const input = el.querySelector('input[type="radio"], input[type="checkbox"]')
+    if (!(input instanceof HTMLInputElement)) continue
+    el.setAttribute('aria-checked', input.checked.toString())
   }
-  selected.setAttribute('aria-checked', 'true')
 }
 
 function commit(selected: Element, details: Element) {
@@ -113,7 +109,7 @@ function commit(selected: Element, details: Element) {
   if (!dispatched) return
 
   updateLabel(selected, details)
-  updateChecked(selected, details)
+  updateChecked(details)
   if (selected.getAttribute('role') !== 'menuitemcheckbox') close(details)
   selected.dispatchEvent(new CustomEvent('details-menu-selected', {bubbles: true}))
 }

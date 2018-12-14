@@ -152,7 +152,37 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('mutually exclusive menu items', function() {
+  describe('mutually exclusive menu items as buttons', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Click</summary>
+          <details-menu>
+            <button type="button" role="menuitemradio" aria-checked="false">Hubot</button>
+            <button type="button" role="menuitemradio" aria-checked="false">Bender</button>
+            <button type="button" role="menuitemradio" aria-checked="false">BB-8</button>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('manages checked state', function() {
+      const details = document.querySelector('details')
+      const item = details.querySelector('button')
+      assert.equal(item.getAttribute('aria-checked'), 'false')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(item.getAttribute('aria-checked'), 'true')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
+    })
+  })
+
+  describe('mutually exclusive menu items as labels', function() {
     beforeEach(function() {
       const container = document.createElement('div')
       container.innerHTML = `

@@ -38,6 +38,17 @@
     </details-menu>
   </details>
 
+  <details>
+    <summary data-menu-button>Favorite robots</summary>
+    <details-menu>
+      <ul>
+        <li><button type="submit" name="robot" value="Hubot" role="menuitemradio" data-menu-button-text>Hubot</button></li>
+        <li><button type="submit" name="robot" value="Bender" role="menuitemradio" data-menu-button-text>Bender</button></li>
+        <li><button type="submit" name="robot" value="BB-8" role="menuitemradio" data-menu-button-text>BB-8</button></li>
+      </ul>
+    </details-menu>
+  </details>
+
   <script type="text/javascript">
     document.addEventListener('details-menu-selected', e => console.log(e))
   </script>

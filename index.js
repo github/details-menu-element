@@ -88,17 +88,16 @@ function shouldCommit(event: Event) {
   if (target.closest('details') !== details) return
 
   const menuitem =
-    event.type === 'click'
-      ? target.closest('[role="menuitem"]')
-      : target.closest('[role="menuitemradio"], [role="menuitemcheckbox"]')
+    event.type === 'change'
+      ? target.closest('[role="menuitemradio"], [role="menuitemcheckbox"]')
+      : target.closest('[role="menuitem"], [role="menuitemradio"]')
   if (menuitem) commit(menuitem, details)
 }
 
-function updateChecked(details: Element) {
+function updateChecked(selected: Element, details: Element) {
   for (const el of details.querySelectorAll('[role="menuitemradio"], [role="menuitemcheckbox"]')) {
     const input = el.querySelector('input[type="radio"], input[type="checkbox"]')
-    if (!(input instanceof HTMLInputElement)) continue
-    el.setAttribute('aria-checked', input.checked.toString())
+    el.setAttribute('aria-checked', (input instanceof HTMLInputElement ? input.checked : el === selected).toString())
   }
 }
 
@@ -109,7 +108,7 @@ function commit(selected: Element, details: Element) {
   if (!dispatched) return
 
   updateLabel(selected, details)
-  updateChecked(details)
+  updateChecked(selected, details)
   if (selected.getAttribute('role') !== 'menuitemcheckbox') close(details)
   selected.dispatchEvent(new CustomEvent('details-menu-selected', {bubbles: true}))
 }

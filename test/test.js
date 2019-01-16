@@ -65,6 +65,7 @@ describe('details-menu element', function() {
       const item = details.querySelector('[data-menu-button-contents]')
       assert.equal(summary.textContent, 'Click')
       item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      // eslint-disable-next-line github/unescaped-html-literal
       assert.equal(summary.innerHTML, '<strong>Bender</strong>')
     })
 

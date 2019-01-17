@@ -115,6 +115,7 @@ function commit(selected: Element, details: Element) {
 
 function keydown(event: KeyboardEvent) {
   const details: any = event.currentTarget
+  const isSummaryFocused = event.target instanceof Element && event.target.tagName === 'SUMMARY'
 
   // Ignore key presses from nested details.
   if (details.querySelector('details[open]')) return
@@ -126,6 +127,9 @@ function keydown(event: KeyboardEvent) {
       break
     case 'ArrowDown':
       {
+        if (isSummaryFocused && !details.hasAttribute('open')) {
+          details.setAttribute('open', '')
+        }
         const target = sibling(details, true)
         if (target) target.focus()
         event.preventDefault()
@@ -133,6 +137,9 @@ function keydown(event: KeyboardEvent) {
       break
     case 'ArrowUp':
       {
+        if (isSummaryFocused && !details.hasAttribute('open')) {
+          details.setAttribute('open', '')
+        }
         const target = sibling(details, false)
         if (target) target.focus()
         event.preventDefault()

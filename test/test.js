@@ -50,6 +50,30 @@ describe('details-menu element', function() {
       assert.equal(summary, document.activeElement, 'escape focuses summary')
     })
 
+    it('opens and focuses first item on arrow down', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+
+      summary.focus()
+      assert(!details.open, 'menu is not open')
+      summary.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}))
+      assert(details.open, 'menu is open')
+      const first = details.querySelector('[role="menuitem"]')
+      assert.equal(first, document.activeElement, 'arrow focuses first item')
+    })
+
+    it('opens and focuses last item on arrow up', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+
+      summary.focus()
+      assert(!details.open, 'menu is not open')
+      summary.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}))
+      assert(details.open, 'menu is open')
+      const last = [...details.querySelectorAll('[role="menuitem"]:not([disabled]):not([aria-disabled])')].pop()
+      assert.equal(last, document.activeElement, 'arrow focuses last item')
+    })
+
     it('updates the button label with text', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')

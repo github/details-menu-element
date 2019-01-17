@@ -40,11 +40,13 @@ describe('details-menu element', function() {
 
       summary.focus()
       summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      assert.equal(summary, document.activeElement, 'summary remains focused on toggle')
+      details.dispatchEvent(new CustomEvent('toggle'))
+      const first = details.querySelector('[role="menuitem"]')
+      assert.equal(first, document.activeElement, 'toggle open focuses first item')
 
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}))
-      const first = details.querySelector('[role="menuitem"]')
-      assert.equal(first, document.activeElement, 'arrow focuses first item')
+      const second = details.querySelectorAll('[role="menuitem"]')[1]
+      assert.equal(second, document.activeElement, 'arrow focuses second item')
 
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}))
       assert.equal(summary, document.activeElement, 'escape focuses summary')

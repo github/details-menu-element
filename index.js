@@ -57,10 +57,14 @@ function closeCurrentMenu(event) {
 }
 
 function focusInput(details: Element) {
-  if (!(details: any).open) return
+  if (!details.hasAttribute('open')) return
+
   const input = details.querySelector('[autofocus]')
   if (input) {
     input.focus()
+  } else {
+    const target = sibling(details, true)
+    if (target) target.focus()
   }
 }
 

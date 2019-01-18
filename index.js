@@ -27,21 +27,26 @@ class DetailsMenuElement extends HTMLElement {
     details.addEventListener('click', shouldCommit)
     details.addEventListener('change', shouldCommit)
     details.addEventListener('keydown', keydown)
-    details.addEventListener(
-      'toggle',
-      () => {
-        if (!this.src) return
-        const loader: any = this.querySelector('include-fragment')
-        if (loader) {
-          loader.addEventListener('loadend', focusInput.bind(null, details))
-          loader.src = this.src
-        }
-      },
-      {once: true}
-    )
-
+    details.addEventListener('toggle', loadFragment, {once: true})
     details.addEventListener('toggle', closeCurrentMenu)
     details.addEventListener('toggle', focusInput.bind(null, details))
+  }
+}
+
+function loadFragment(event) {
+  const details = event.currentTarget
+  if (!(details instanceof Element)) return
+
+  const menu = details.querySelector('details-menu')
+  if (!menu) return
+
+  const src = menu.getAttribute('src')
+  if (!src) return
+
+  const loader = menu.querySelector('include-fragment')
+  if (loader) {
+    loader.addEventListener('loadend', focusInput.bind(null, details))
+    loader.setAttribute('src', src)
   }
 }
 

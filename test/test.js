@@ -34,22 +34,28 @@ describe('details-menu element', function() {
       document.body.innerHTML = ''
     })
 
-    it('manages focus', function() {
+    it('opens and does not focus an item on mouse click', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
 
       summary.focus()
-      summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      details.open = true
+      summary.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}))
       details.dispatchEvent(new CustomEvent('toggle'))
+      assert.equal(summary, document.activeElement, 'mouse toggle open leaves summary focused')
+    })
+
+    it('opens and focuses first item on summary enter', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+
+      summary.focus()
+      details.open = true
+      summary.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+      details.dispatchEvent(new CustomEvent('toggle'))
+
       const first = details.querySelector('[role="menuitem"]')
       assert.equal(first, document.activeElement, 'toggle open focuses first item')
-
-      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}))
-      const second = details.querySelectorAll('[role="menuitem"]')[1]
-      assert.equal(second, document.activeElement, 'arrow focuses second item')
-
-      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}))
-      assert.equal(summary, document.activeElement, 'escape focuses summary')
     })
 
     it('opens and focuses first item on arrow down', function() {
@@ -58,8 +64,10 @@ describe('details-menu element', function() {
 
       summary.focus()
       assert(!details.open, 'menu is not open')
+
       summary.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}))
       assert(details.open, 'menu is open')
+
       const first = details.querySelector('[role="menuitem"]')
       assert.equal(first, document.activeElement, 'arrow focuses first item')
     })
@@ -70,10 +78,47 @@ describe('details-menu element', function() {
 
       summary.focus()
       assert(!details.open, 'menu is not open')
+
       summary.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}))
       assert(details.open, 'menu is open')
+
       const last = [...details.querySelectorAll('[role="menuitem"]:not([disabled]):not([aria-disabled])')].pop()
       assert.equal(last, document.activeElement, 'arrow focuses last item')
+    })
+
+    it('navigates items with arrow keys', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+
+      details.open = true
+      summary.focus()
+
+      const [first, second, rest] = details.querySelectorAll('[role="menuitem"]')
+      assert(rest)
+
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}))
+      assert.equal(first, document.activeElement, 'arrow down focuses first item')
+
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}))
+      assert.equal(second, document.activeElement, 'arrow down focuses second item')
+
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}))
+      assert.equal(first, document.activeElement, 'arrow up focuses first item')
+    })
+
+    it('closes and focuses summary on escape', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+
+      details.open = true
+
+      const first = details.querySelector('[role="menuitem"]')
+      first.focus()
+      assert.equal(first, document.activeElement)
+
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}))
+      assert.equal(summary, document.activeElement, 'escape focuses summary')
+      assert(!details.open, 'details toggles closed')
     })
 
     it('updates the button label with text', function() {

@@ -154,7 +154,8 @@ function commit(selected: Element, details: Element) {
 }
 
 function keydown(event: KeyboardEvent) {
-  const details: any = event.currentTarget
+  const details = event.currentTarget
+  if (!(details instanceof Element)) return
   const isSummaryFocused = event.target instanceof Element && event.target.tagName === 'SUMMARY'
 
   // Ignore key presses from nested details.
@@ -223,7 +224,7 @@ function isMenuItem(el: Element): boolean {
 }
 
 function close(details: Element) {
-  ;(details: any).open = false
+  details.removeAttribute('open')
   const summary = details.querySelector('summary')
   if (summary) summary.focus()
 }

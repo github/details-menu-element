@@ -22,6 +22,8 @@ class DetailsMenuElement extends HTMLElement {
     const summary = details.querySelector('summary')
     if (summary) summary.setAttribute('aria-haspopup', 'menu')
 
+    onOpen(details)
+
     details.addEventListener('click', shouldCommit)
     details.addEventListener('change', shouldCommit)
     details.addEventListener('keydown', keydown)
@@ -43,6 +45,29 @@ class DetailsMenuElement extends HTMLElement {
   }
 }
 
+function onOpen(details: Element) {
+  let isMouse = false
+  const mousedown = () => (isMouse = true)
+  const keydown = () => (isMouse = false)
+  const toggle = () => {
+    if (details.hasAttribute('open') && !isMouse) {
+      focusFirstItem(details)
+    }
+  }
+
+  details.addEventListener('mousedown', mousedown)
+  details.addEventListener('keydown', keydown)
+  details.addEventListener('toggle', toggle)
+
+  return {
+    unsubscribe: () => {
+      details.removeEventListener('mousedown', mousedown)
+      details.removeEventListener('keydown', keydown)
+      details.removeEventListener('toggle', toggle)
+    }
+  }
+}
+
 function closeCurrentMenu(event) {
   const el = event.currentTarget
   if (!(el instanceof Element)) return
@@ -57,11 +82,21 @@ function closeCurrentMenu(event) {
 }
 
 function focusInput(details: Element) {
-  if (!(details: any).open) return
+  if (!details.hasAttribute('open')) return
+
   const input = details.querySelector('[autofocus]')
   if (input) {
     input.focus()
   }
+}
+
+// Focus first item unless an item is already focused.
+function focusFirstItem(details: Element) {
+  const selected = document.activeElement
+  if (selected && isMenuItem(selected) && details.contains(selected)) return
+
+  const target = sibling(details, true)
+  if (target) target.focus()
 }
 
 function sibling(details: Element, next: boolean): ?HTMLElement {

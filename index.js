@@ -22,16 +22,45 @@ class DetailsMenuElement extends HTMLElement {
     const summary = details.querySelector('summary')
     if (summary) summary.setAttribute('aria-haspopup', 'menu')
 
-    onOpen(details)
+    const focus = () => focusInput(details)
 
     details.addEventListener('click', shouldCommit)
     details.addEventListener('change', shouldCommit)
     details.addEventListener('keydown', keydown)
     details.addEventListener('toggle', loadFragment, {once: true})
     details.addEventListener('toggle', closeCurrentMenu)
-    details.addEventListener('toggle', focusInput.bind(null, details))
+    details.addEventListener('toggle', focus)
+
+    const subscriptions = [
+      onOpen(details),
+      {
+        unsubscribe: () => {
+          details.removeEventListener('click', shouldCommit)
+          details.removeEventListener('change', shouldCommit)
+          details.removeEventListener('keydown', keydown)
+          details.removeEventListener('toggle', loadFragment, {once: true})
+          details.removeEventListener('toggle', closeCurrentMenu)
+          details.removeEventListener('toggle', focus)
+        }
+      }
+    ]
+
+    states.set(this, {subscriptions})
+  }
+
+  disconnectedCallback() {
+    const state = states.get(this)
+    if (!state) return
+
+    states.delete(this)
+
+    for (const sub of state.subscriptions) {
+      sub.unsubscribe()
+    }
   }
 }
+
+const states = new WeakMap()
 
 function loadFragment(event) {
   const details = event.currentTarget

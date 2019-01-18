@@ -22,30 +22,14 @@ class DetailsMenuElement extends HTMLElement {
     const summary = details.querySelector('summary')
     if (summary) summary.setAttribute('aria-haspopup', 'menu')
 
-    const focus = () => focusInput(details)
-
     details.addEventListener('click', shouldCommit)
     details.addEventListener('change', shouldCommit)
     details.addEventListener('keydown', keydown)
     details.addEventListener('toggle', loadFragment, {once: true})
     details.addEventListener('toggle', closeCurrentMenu)
-    details.addEventListener('toggle', focus)
 
-    const subscriptions = [
-      onOpen(details),
-      {
-        unsubscribe: () => {
-          details.removeEventListener('click', shouldCommit)
-          details.removeEventListener('change', shouldCommit)
-          details.removeEventListener('keydown', keydown)
-          details.removeEventListener('toggle', loadFragment, {once: true})
-          details.removeEventListener('toggle', closeCurrentMenu)
-          details.removeEventListener('toggle', focus)
-        }
-      }
-    ]
-
-    states.set(this, {subscriptions})
+    const subscriptions = [onOpen(details)]
+    states.set(this, {details, subscriptions})
   }
 
   disconnectedCallback() {
@@ -54,9 +38,15 @@ class DetailsMenuElement extends HTMLElement {
 
     states.delete(this)
 
-    for (const sub of state.subscriptions) {
+    const {details, subscriptions} = state
+    for (const sub of subscriptions) {
       sub.unsubscribe()
     }
+    details.removeEventListener('click', shouldCommit)
+    details.removeEventListener('change', shouldCommit)
+    details.removeEventListener('keydown', keydown)
+    details.removeEventListener('toggle', loadFragment, {once: true})
+    details.removeEventListener('toggle', closeCurrentMenu)
   }
 }
 
@@ -74,7 +64,7 @@ function loadFragment(event) {
 
   const loader = menu.querySelector('include-fragment')
   if (loader) {
-    loader.addEventListener('loadend', focusInput.bind(null, details))
+    loader.addEventListener('loadend', () => autofocus(details))
     loader.setAttribute('src', src)
   }
 }
@@ -84,6 +74,7 @@ function onOpen(details: Element) {
   const mousedown = () => (isMouse = true)
   const keydown = () => (isMouse = false)
   const toggle = () => {
+    autofocus(details)
     if (details.hasAttribute('open') && !isMouse) {
       focusFirstItem(details)
     }
@@ -115,7 +106,7 @@ function closeCurrentMenu(event) {
   }
 }
 
-function focusInput(details: Element) {
+function autofocus(details: Element) {
   if (!details.hasAttribute('open')) return
 
   const input = details.querySelector('[autofocus]')

@@ -62,10 +62,15 @@ function focusInput(details: Element) {
   const input = details.querySelector('[autofocus]')
   if (input) {
     input.focus()
-  } else {
-    const target = sibling(details, true)
-    if (target) target.focus()
+    return
   }
+
+  // Focus first item unless an item is already focused.
+  const selected = document.activeElement
+  if (selected && isMenuItem(selected) && details.contains(selected)) return
+
+  const target = sibling(details, true)
+  if (target) target.focus()
 }
 
 function sibling(details: Element, next: boolean): ?HTMLElement {

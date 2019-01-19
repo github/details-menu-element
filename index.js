@@ -22,34 +22,59 @@ class DetailsMenuElement extends HTMLElement {
     const summary = details.querySelector('summary')
     if (summary) summary.setAttribute('aria-haspopup', 'menu')
 
-    onOpen(details)
-
     details.addEventListener('click', shouldCommit)
     details.addEventListener('change', shouldCommit)
     details.addEventListener('keydown', keydown)
-    details.addEventListener(
-      'toggle',
-      () => {
-        if (!this.src) return
-        const loader: any = this.querySelector('include-fragment')
-        if (loader) {
-          loader.addEventListener('loadend', focusInput.bind(null, details))
-          loader.src = this.src
-        }
-      },
-      {once: true}
-    )
-
+    details.addEventListener('toggle', loadFragment, {once: true})
     details.addEventListener('toggle', closeCurrentMenu)
-    details.addEventListener('toggle', focusInput.bind(null, details))
+
+    const subscriptions = [focusOnOpen(details)]
+    states.set(this, {details, subscriptions})
+  }
+
+  disconnectedCallback() {
+    const state = states.get(this)
+    if (!state) return
+
+    states.delete(this)
+
+    const {details, subscriptions} = state
+    for (const sub of subscriptions) {
+      sub.unsubscribe()
+    }
+    details.removeEventListener('click', shouldCommit)
+    details.removeEventListener('change', shouldCommit)
+    details.removeEventListener('keydown', keydown)
+    details.removeEventListener('toggle', loadFragment, {once: true})
+    details.removeEventListener('toggle', closeCurrentMenu)
   }
 }
 
-function onOpen(details: Element) {
+const states = new WeakMap()
+
+function loadFragment(event) {
+  const details = event.currentTarget
+  if (!(details instanceof Element)) return
+
+  const menu = details.querySelector('details-menu')
+  if (!menu) return
+
+  const src = menu.getAttribute('src')
+  if (!src) return
+
+  const loader = menu.querySelector('include-fragment')
+  if (loader) {
+    loader.addEventListener('loadend', () => autofocus(details))
+    loader.setAttribute('src', src)
+  }
+}
+
+function focusOnOpen(details: Element) {
   let isMouse = false
   const mousedown = () => (isMouse = true)
   const keydown = () => (isMouse = false)
   const toggle = () => {
+    autofocus(details)
     if (details.hasAttribute('open') && !isMouse) {
       focusFirstItem(details)
     }
@@ -81,7 +106,7 @@ function closeCurrentMenu(event) {
   }
 }
 
-function focusInput(details: Element) {
+function autofocus(details: Element) {
   if (!details.hasAttribute('open')) return
 
   const input = details.querySelector('[autofocus]')
@@ -149,7 +174,8 @@ function commit(selected: Element, details: Element) {
 }
 
 function keydown(event: KeyboardEvent) {
-  const details: any = event.currentTarget
+  const details = event.currentTarget
+  if (!(details instanceof Element)) return
   const isSummaryFocused = event.target instanceof Element && event.target.tagName === 'SUMMARY'
 
   // Ignore key presses from nested details.
@@ -218,7 +244,7 @@ function isMenuItem(el: Element): boolean {
 }
 
 function close(details: Element) {
-  ;(details: any).open = false
+  details.removeAttribute('open')
   const summary = details.querySelector('summary')
   if (summary) summary.focus()
 }

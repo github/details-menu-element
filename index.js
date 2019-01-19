@@ -28,7 +28,7 @@ class DetailsMenuElement extends HTMLElement {
     details.addEventListener('toggle', loadFragment, {once: true})
     details.addEventListener('toggle', closeCurrentMenu)
 
-    const subscriptions = [onOpen(details)]
+    const subscriptions = [focusOnOpen(details)]
     states.set(this, {details, subscriptions})
   }
 
@@ -69,7 +69,7 @@ function loadFragment(event) {
   }
 }
 
-function onOpen(details: Element) {
+function focusOnOpen(details: Element) {
   let isMouse = false
   const mousedown = () => (isMouse = true)
   const keydown = () => (isMouse = false)

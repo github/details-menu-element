@@ -413,4 +413,48 @@ describe('details-menu element', function() {
       assert(parent.open)
     })
   })
+
+  describe('deferred loading menu content', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Menu 1</summary>
+          <details-menu src="/test" preload>
+            <include-fragment>
+              Loading…
+            </include-fragment>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('fetches content on toggle', function() {
+      const details = document.querySelector('details')
+      const loader = details.querySelector('include-fragment')
+
+      assert(!loader.hasAttribute('src'))
+
+      details.open = true
+      details.dispatchEvent(new CustomEvent('toggle'))
+
+      assert.equal('/test', loader.getAttribute('src'))
+    })
+
+    it('fetches content on hover', function() {
+      const details = document.querySelector('details')
+      const loader = details.querySelector('include-fragment')
+
+      assert(!loader.hasAttribute('src'))
+
+      details.dispatchEvent(new CustomEvent('mouseover'))
+
+      assert.equal('/test', loader.getAttribute('src'))
+    })
+  })
 })

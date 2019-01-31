@@ -1,6 +1,8 @@
 /* @flow */
 
 declare class DetailsMenuElement extends HTMLElement {
+  get preload(): boolean;
+  set preload(value: boolean): void;
   get src(): string;
   set src(url: string): void;
 }

@@ -5,6 +5,18 @@ class DetailsMenuElement extends HTMLElement {
     super()
   }
 
+  get preload(): boolean {
+    return this.hasAttribute('preload')
+  }
+
+  set preload(value: boolean) {
+    if (value) {
+      this.setAttribute('preload', '')
+    } else {
+      this.removeAttribute('preload')
+    }
+  }
+
   get src(): string {
     return this.getAttribute('src') || ''
   }
@@ -27,6 +39,9 @@ class DetailsMenuElement extends HTMLElement {
     details.addEventListener('keydown', keydown)
     details.addEventListener('toggle', loadFragment, {once: true})
     details.addEventListener('toggle', closeCurrentMenu)
+    if (this.preload) {
+      details.addEventListener('mouseover', loadFragment, {once: true})
+    }
 
     const subscriptions = [focusOnOpen(details)]
     states.set(this, {details, subscriptions})
@@ -47,12 +62,13 @@ class DetailsMenuElement extends HTMLElement {
     details.removeEventListener('keydown', keydown)
     details.removeEventListener('toggle', loadFragment, {once: true})
     details.removeEventListener('toggle', closeCurrentMenu)
+    details.removeEventListener('mouseover', loadFragment, {once: true})
   }
 }
 
 const states = new WeakMap()
 
-function loadFragment(event) {
+function loadFragment(event: Event) {
   const details = event.currentTarget
   if (!(details instanceof Element)) return
 
@@ -63,7 +79,7 @@ function loadFragment(event) {
   if (!src) return
 
   const loader = menu.querySelector('include-fragment')
-  if (loader) {
+  if (loader && !loader.hasAttribute('src')) {
     loader.addEventListener('loadend', () => autofocus(details))
     loader.setAttribute('src', src)
   }

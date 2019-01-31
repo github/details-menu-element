@@ -78,7 +78,7 @@ Menu content can be loaded from a server by embedding an
 ```html
 <details>
   <summary>Robots</summary>
-  <details-menu src="/robots">
+  <details-menu src="/robots" preload>
     <include-fragment>Loading…</include-fragment>
   </details-menu>
 </details>
@@ -86,6 +86,10 @@ Menu content can be loaded from a server by embedding an
 
 The `src` attribute value is copied to the `<include-fragment>` the first
 time the `<details>` button is toggled open, which starts the server fetch.
+
+If the `preload` attribute is present, the server fetch will begin on mouse
+hover over the `<details>` button, so the content may be loaded by the time
+the menu is opened.
 
 ## Browser support
 

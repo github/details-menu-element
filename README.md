@@ -17,12 +17,10 @@ import '@github/details-menu-element'
 ```html
 <details>
   <summary>Robots</summary>
-  <details-menu>
-    <ul>
-      <li><button type="button" role="menuitem">Hubot</button></li>
-      <li><button type="button" role="menuitem">Bender</button></li>
-      <li><button type="button" role="menuitem">BB-8</button></li>
-    </ul>
+  <details-menu role="menu">
+    <button type="button" role="menuitem">Hubot</button>
+    <button type="button" role="menuitem">Bender</button>
+    <button type="button" role="menuitem">BB-8</button>
   </details-menu>
 </details>
 ```
@@ -32,12 +30,10 @@ Use `data-menu-button` and `data-menu-button-text` to have button text updated o
 ```html
 <details>
   <summary>Preferred robot: <span data-menu-button>None</span></summary>
-  <details-menu>
-    <ul>
-      <li><button type="button" role="menuitem" data-menu-button-text>Hubot</button></li>
-      <li><button type="button" role="menuitem" data-menu-button-text>Bender</button></li>
-      <li><button type="button" role="menuitem" data-menu-button-text>BB-8</button></li>
-    </ul>
+  <details-menu role="menu">
+    <button type="button" role="menuitem" data-menu-button-text>Hubot</button>
+    <button type="button" role="menuitem" data-menu-button-text>Bender</button>
+    <button type="button" role="menuitem" data-menu-button-text>BB-8</button>
   </details-menu>
 </details>
 ```
@@ -47,18 +43,16 @@ Use `label[tabindex="0"][role=menuitemradio/menuitemcheckbox]` when dealing with
 ```html
 <details>
   <summary>Preferred robot</summary>
-  <details-menu>
-    <ul>
-      <li><label tabindex="0" role="menuitemradio">
-        <input type="radio" name="robot" value="Hubot"> Hubot
-      </label></li>
-      <li><label tabindex="0" role="menuitemradio">
-        <input type="radio" name="robot" value="Bender"> Bender
-      </label></li>
-      <li><label tabindex="0" role="menuitemradio">
-        <input type="radio" name="robot" value="BB-8"> BB-8
-      </label></li>
-    </ul>
+  <details-menu role="menu">
+    <label tabindex="0" role="menuitemradio">
+      <input type="radio" name="robot" value="Hubot"> Hubot
+    </label>
+    <label tabindex="0" role="menuitemradio">
+      <input type="radio" name="robot" value="Bender"> Bender
+    </label>
+    <label tabindex="0" role="menuitemradio">
+      <input type="radio" name="robot" value="BB-8"> BB-8
+    </label>
   </details-menu>
 </details>
 ```

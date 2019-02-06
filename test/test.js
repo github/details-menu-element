@@ -456,5 +456,21 @@ describe('details-menu element', function() {
 
       assert.equal('/test', loader.getAttribute('src'))
     })
+
+    it('does not fetch nested include-fragment', function() {
+      const details = document.querySelector('details')
+      const loader = details.querySelector('include-fragment')
+
+      details.dispatchEvent(new CustomEvent('mouseover'))
+      assert.equal('/test', loader.getAttribute('src'), 'mouse hover should trigger fetch')
+
+      // Simulate include-fragment fetch.
+      const response = document.createElement('include-fragment')
+      loader.replaceWith(response)
+
+      details.open = true
+      details.dispatchEvent(new CustomEvent('toggle'))
+      assert(!response.hasAttribute('src'), 'toggle should not trigger second fetch')
+    })
   })
 })

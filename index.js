@@ -44,7 +44,7 @@ class DetailsMenuElement extends HTMLElement {
     }
 
     const subscriptions = [focusOnOpen(details)]
-    states.set(this, {details, subscriptions, preloaded: false})
+    states.set(this, {details, subscriptions, loaded: false})
   }
 
   disconnectedCallback() {
@@ -81,8 +81,8 @@ function loadFragment(event: Event) {
   const state = states.get(menu)
   if (!state) return
 
-  if (state.preloaded) return
-  state.preloaded = true
+  if (state.loaded) return
+  state.loaded = true
 
   const loader = menu.querySelector('include-fragment')
   if (loader && !loader.hasAttribute('src')) {

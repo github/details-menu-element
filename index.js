@@ -207,6 +207,7 @@ function keydown(event: KeyboardEvent) {
     case 'Escape':
       close(details)
       event.preventDefault()
+      event.stopPropagation()
       break
     case 'ArrowDown':
       {

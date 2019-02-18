@@ -473,4 +473,52 @@ describe('details-menu element', function() {
       assert(!response.hasAttribute('src'), 'toggle should not trigger second fetch')
     })
   })
+
+  describe('closing the menu', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <div class="dialog">
+          <details open>
+            <summary data-menu-button><em>Click</em></summary>
+            <details-menu>
+              <button type="button" role="menuitem" data-menu-button-text>Hubot</button>
+              <button type="button" role="menuitem" data-menu-button-contents><strong>Bender</strong></button>
+              <button type="button" role="menuitem">BB-8</button>
+              <button type="button" role="menuitem" data-menu-button-text aria-disabled="true">WALL-E</button>
+              <button type="button" role="menuitem" disabled>R2-D2</button>
+            </details-menu>
+          </details>
+        </div>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('does not propagate the key event when a user closes the menu with esc', function() {
+      const dialog = document.querySelector('.dialog')
+      const details = dialog.querySelector('details')
+      let dialogClosed = false
+      let detailsClosed = false
+
+      dialog.addEventListener('keydown', () => {
+        dialogClosed = true
+      })
+
+      details.addEventListener('keydown', () => {
+        detailsClosed = true
+      })
+
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))
+
+      // The details menu is closed
+      assert.isTrue(detailsClosed)
+
+      // The dialog is not closed
+      assert.isFalse(dialogClosed)
+    })
+  })
 })

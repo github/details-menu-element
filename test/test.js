@@ -498,7 +498,7 @@ describe('details-menu element', function() {
       document.body.innerHTML = ''
     })
 
-    it('does not propigate the key event when a user closes the menu with esc', function() {
+    it('does not propagate the key event when a user closes the menu with esc', function() {
       const dialog = document.querySelector('.dialog')
       const details = dialog.querySelector('details')
       let dialogClosed = false

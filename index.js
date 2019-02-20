@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow strict */
 
 class DetailsMenuElement extends HTMLElement {
   constructor() {

@@ -59,8 +59,8 @@ Use `label[tabindex="0"][role=menuitemradio/menuitemcheckbox]` when dealing with
 
 ### Events
 
-- `details-menu-select` - An item is to be select (cancelable).
-- `details-menu-selected` - An item is selected, label updated, menu closed.
+- `details-menu-select`(cancelable) - fired on `details-menu` with `event.detail.relatedTarget` being the item to be select.
+- `details-menu-selected` - fired on `details-menu` with `event.detail.relatedTarget` being the item selected, after label is updated and menu is closed.
 
 ### Deferred loading
 

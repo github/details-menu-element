@@ -146,13 +146,15 @@ describe('details-menu element', function() {
       const menu = details.querySelector('details-menu')
       const item = details.querySelector('button')
 
-      menu.addEventListener('details-menu-select', () => {
+      menu.addEventListener('details-menu-select', event => {
         assert(details.open, 'menu is still open')
+        assert.equal(event.detail.relatedTarget, item)
         assert.equal(summary.textContent, 'Click')
       })
 
-      menu.addEventListener('details-menu-selected', () => {
+      menu.addEventListener('details-menu-selected', event => {
         assert(!details.open, 'menu is closed')
+        assert.equal(event.detail.relatedTarget, item)
         assert.equal(summary.textContent, 'Hubot')
         done()
       })

@@ -185,14 +185,25 @@ function updateChecked(selected: Element, details: Element) {
 
 function commit(selected: Element, details: Element) {
   if (selected.hasAttribute('disabled') || selected.getAttribute('aria-disabled') === 'true') return
+  const menu = selected.closest('details-menu')
+  if (!menu) return
 
-  const dispatched = selected.dispatchEvent(new CustomEvent('details-menu-select', {bubbles: true, cancelable: true}))
+  const dispatched = menu.dispatchEvent(
+    new CustomEvent('details-menu-select', {
+      cancelable: true,
+      detail: {relatedTarget: selected}
+    })
+  )
   if (!dispatched) return
 
   updateLabel(selected, details)
   updateChecked(selected, details)
   if (selected.getAttribute('role') !== 'menuitemcheckbox') close(details)
-  selected.dispatchEvent(new CustomEvent('details-menu-selected', {bubbles: true}))
+  menu.dispatchEvent(
+    new CustomEvent('details-menu-selected', {
+      detail: {relatedTarget: selected}
+    })
+  )
 }
 
 function keydown(event: KeyboardEvent) {

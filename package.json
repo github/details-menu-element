@@ -17,28 +17,27 @@
     "clean": "rm -rf dist",
     "lint": "github-lint",
     "prebuild": "npm run clean && npm run lint && mkdir dist",
-    "build-umd": "BABEL_ENV=umd babel index.js -o dist/index.umd.js && cp index.js.flow dist/index.umd.js.flow",
-    "build-esm": "BABEL_ENV=esm babel index.js -o dist/index.esm.js && cp index.js.flow dist/index.esm.js.flow",
-    "build": "npm run build-umd && npm run build-esm",
+    "build": "rollup -c && cp src/index.js.flow dist/index.esm.js.flow && cp src/index.js.flow dist/index.umd.js.flow",
     "pretest": "npm run build",
     "test": "karma start test/karma.config.js",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
-    "@babel/plugin-transform-modules-umd": "^7.2.0",
     "babel-preset-github": "^2.1.2",
     "chai": "^4.2.0",
     "eslint": "^5.12.0",
     "eslint-plugin-github": "^1.9.0",
     "flow-bin": "^0.90.0",
-    "karma": "^4.0.0",
+    "karma": "^4.0.1",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.5",
-    "mocha": "^5.0.5"
+    "mocha": "^5.0.5",
+    "rollup": "^1.10.0",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-node-resolve": "^4.2.3"
   },
   "eslintIgnore": [
     "dist/"

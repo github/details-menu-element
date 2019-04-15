@@ -1,12 +1,20 @@
 /* @flow strict */
 
-declare class DetailsMenuElement extends HTMLElement {
-  get preload(): boolean;
-  set preload(value: boolean): void;
-  get src(): string;
-  set src(url: string): void;
-}
-
 declare module '@github/details-menu-element' {
-  declare export default typeof DetailsMenuElement
+  declare export default class DetailsMenuElement extends HTMLElement {
+    get preload(): boolean;
+    set preload(value: boolean): void;
+    get src(): string;
+    set src(url: string): void;
+  }
+  declare type DetailsMenuEventType = 'details-menu-select' | 'details-menu-selected'
+
+  declare type DetailsMenuEvent$Init = Event$Init & {
+    relatedTarget: Element
+  }
+
+  declare export class DetailsMenuEvent extends CustomEvent {
+    relatedTarget: Element;
+    constructor(type: DetailsMenuEventType, init: DetailsMenuEvent$Init): void;
+  }
 }

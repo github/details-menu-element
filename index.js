@@ -1,4 +1,6 @@
 /* @flow strict */
+import DetailsMenuEvent from './details-menu-event'
+export {default as DetailsMenuEvent} from './details-menu-event'
 
 class DetailsMenuElement extends HTMLElement {
   constructor() {
@@ -189,9 +191,9 @@ function commit(selected: Element, details: Element) {
   if (!menu) return
 
   const dispatched = menu.dispatchEvent(
-    new CustomEvent('details-menu-select', {
+    new DetailsMenuEvent('details-menu-select', {
       cancelable: true,
-      detail: {relatedTarget: selected}
+      relatedTarget: selected
     })
   )
   if (!dispatched) return
@@ -200,8 +202,8 @@ function commit(selected: Element, details: Element) {
   updateChecked(selected, details)
   if (selected.getAttribute('role') !== 'menuitemcheckbox') close(details)
   menu.dispatchEvent(
-    new CustomEvent('details-menu-selected', {
-      detail: {relatedTarget: selected}
+    new DetailsMenuEvent('details-menu-selected', {
+      relatedTarget: selected
     })
   )
 }

@@ -9,7 +9,7 @@ declare module '@github/details-menu-element' {
   }
   declare type DetailsMenuEventType = 'details-menu-select' | 'details-menu-selected'
 
-  declare type DetailsMenuEvent$Init = Event$Init & {
+  declare type DetailsMenuEvent$Init = CustomEvent$Init & {
     relatedTarget: Element
   }
 

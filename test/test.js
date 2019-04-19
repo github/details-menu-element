@@ -143,15 +143,18 @@ describe('details-menu element', function() {
     it('fires events in order', function(done) {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
+      const menu = details.querySelector('details-menu')
       const item = details.querySelector('button')
 
-      item.addEventListener('details-menu-select', () => {
+      menu.addEventListener('details-menu-select', event => {
         assert(details.open, 'menu is still open')
+        assert.equal(event.detail.relatedTarget, item)
         assert.equal(summary.textContent, 'Click')
       })
 
-      item.addEventListener('details-menu-selected', () => {
+      menu.addEventListener('details-menu-selected', event => {
         assert(!details.open, 'menu is closed')
+        assert.equal(event.detail.relatedTarget, item)
         assert.equal(summary.textContent, 'Hubot')
         done()
       })
@@ -164,10 +167,11 @@ describe('details-menu element', function() {
     it('fires cancellable select event', function(done) {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
+      const menu = details.querySelector('details-menu')
       const item = details.querySelector('button')
       let selectedEventCounter = 0
 
-      item.addEventListener('details-menu-select', event => {
+      menu.addEventListener('details-menu-select', event => {
         event.preventDefault()
         assert(details.open, 'menu is still open')
         assert.equal(summary.textContent, 'Click')
@@ -177,7 +181,7 @@ describe('details-menu element', function() {
         }, 0)
       })
 
-      item.addEventListener('details-menu-selected', () => {
+      menu.addEventListener('details-menu-selected', () => {
         selectedEventCounter++
       })
 
@@ -199,7 +203,7 @@ describe('details-menu element', function() {
       assert.equal(notDisabled, document.activeElement, 'arrow focuses on the last non-disabled item')
 
       const disabled = details.querySelector('[aria-disabled="true"]')
-      disabled.addEventListener('details-menu-selected', () => eventCounter++)
+      document.addEventListener('details-menu-selected', () => eventCounter++, true)
       disabled.dispatchEvent(new MouseEvent('click', {bubbles: true}))
 
       assert.equal(eventCounter, 0, 'selected event is not fired')
@@ -216,7 +220,7 @@ describe('details-menu element', function() {
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}))
 
       const disabled = details.querySelector('[disabled]')
-      disabled.addEventListener('details-menu-selected', () => eventCounter++)
+      document.addEventListener('details-menu-selected', () => eventCounter++, true)
       disabled.dispatchEvent(new MouseEvent('click', {bubbles: true}))
 
       assert.equal(eventCounter, 0, 'selected event is not fired')
@@ -309,7 +313,7 @@ describe('details-menu element', function() {
       const summary = document.querySelector('summary')
       const item = details.querySelector('label')
       let eventCounter = 0
-      details.addEventListener('details-menu-selected', () => eventCounter++)
+      document.addEventListener('details-menu-selected', () => eventCounter++, true)
 
       summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert(details.open, 'menu opens')

@@ -248,13 +248,17 @@ describe('details-menu element', function() {
       document.body.innerHTML = ''
     })
 
-    it('manages checked state', function() {
+    it('manages checked state and fires events', function() {
       const details = document.querySelector('details')
       const item = details.querySelector('button')
+      let eventCounter = 0
+      document.addEventListener('details-menu-selected', () => eventCounter++, true)
+
       assert.equal(item.getAttribute('aria-checked'), 'false')
       item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert.equal(item.getAttribute('aria-checked'), 'true')
       assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
+      assert.equal(eventCounter, 1, 'selected event is fired twice')
     })
   })
 
@@ -288,7 +292,6 @@ describe('details-menu element', function() {
       item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert.equal(item.getAttribute('aria-checked'), 'true')
       assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
-
       assert.equal(eventCounter, 1, 'selected event is fired twice')
     })
   })

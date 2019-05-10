@@ -171,8 +171,7 @@ function shouldCommit(event: Event) {
 
   if (event.type === 'click') {
     const menuitem = target.closest('[role="menuitem"], [role="menuitemradio"]')
-    const onlyCommitOnChangeEvent =
-      menuitem && menuitem.getAttribute('role') === 'menuitemradio' && menuitem.querySelector('input')
+    const onlyCommitOnChangeEvent = menuitem && menuitem.tagName === 'LABEL' && menuitem.querySelector('input')
     if (menuitem && !onlyCommitOnChangeEvent) {
       commit(menuitem, details)
     }

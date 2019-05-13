@@ -169,11 +169,16 @@ function shouldCommit(event: Event) {
   // Ignore clicks from nested details.
   if (target.closest('details') !== details) return
 
-  const menuitem =
-    event.type === 'change'
-      ? target.closest('[role="menuitemradio"], [role="menuitemcheckbox"]')
-      : target.closest('[role="menuitem"], [role="menuitemradio"]')
-  if (menuitem) commit(menuitem, details)
+  if (event.type === 'click') {
+    const menuitem = target.closest('[role="menuitem"], [role="menuitemradio"]')
+    const onlyCommitOnChangeEvent = menuitem && menuitem.tagName === 'LABEL' && menuitem.querySelector('input')
+    if (menuitem && !onlyCommitOnChangeEvent) {
+      commit(menuitem, details)
+    }
+  } else if (event.type === 'change') {
+    const menuitem = target.closest('[role="menuitemradio"], [role="menuitemcheckbox"]')
+    if (menuitem) commit(menuitem, details)
+  }
 }
 
 function updateChecked(selected: Element, details: Element) {

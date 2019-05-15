@@ -93,29 +93,29 @@ function loadFragment(event: Event) {
 
 function focusOnOpen(details: Element) {
   let isMouse = false
-  const mousedown = () => (isMouse = true)
-  const keydown = () => (isMouse = false)
-  const toggle = () => {
+  const onmousedown = () => (isMouse = true)
+  const onkeydown = () => (isMouse = false)
+  const ontoggle = () => {
     autofocus(details)
     if (details.hasAttribute('open') && !isMouse) {
       focusFirstItem(details)
     }
   }
 
-  details.addEventListener('mousedown', mousedown)
-  details.addEventListener('keydown', keydown)
-  details.addEventListener('toggle', toggle)
+  details.addEventListener('mousedown', onmousedown)
+  details.addEventListener('keydown', onkeydown)
+  details.addEventListener('toggle', ontoggle)
 
   return {
     unsubscribe: () => {
-      details.removeEventListener('mousedown', mousedown)
-      details.removeEventListener('keydown', keydown)
-      details.removeEventListener('toggle', toggle)
+      details.removeEventListener('mousedown', onmousedown)
+      details.removeEventListener('keydown', onkeydown)
+      details.removeEventListener('toggle', ontoggle)
     }
   }
 }
 
-function closeCurrentMenu(event) {
+function closeCurrentMenu(event: Event) {
   const el = event.currentTarget
   if (!(el instanceof Element)) return
   if (!el.hasAttribute('open')) return
@@ -152,9 +152,9 @@ function sibling(details: Element, next: boolean): ?HTMLElement {
   )
   const selected = document.activeElement
   const index = options.indexOf(selected)
-  const sibling = next ? options[index + 1] : options[index - 1]
+  const found = next ? options[index + 1] : options[index - 1]
   const def = next ? options[0] : options[options.length - 1]
-  return sibling || def
+  return found || def
 }
 
 const ctrlBindings = navigator.userAgent.match(/Macintosh/)

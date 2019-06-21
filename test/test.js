@@ -121,6 +121,18 @@ describe('details-menu element', function() {
       assert(!details.open, 'details toggles closed')
     })
 
+    it('allow propagation on escape if details is closed', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') summary.textContent = 'Propagated'
+      })
+
+      summary.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))
+      assert.equal(summary.textContent, 'Propagated')
+    })
+
     it('updates the button label with text', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')

@@ -96,13 +96,13 @@ describe('details-menu element', function() {
       const [first, second, rest] = details.querySelectorAll('[role="menuitem"]')
       assert(rest)
 
-      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}))
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}))
       assert.equal(first, document.activeElement, 'arrow down focuses first item')
 
-      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}))
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}))
       assert.equal(second, document.activeElement, 'arrow down focuses second item')
 
-      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}))
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}))
       assert.equal(first, document.activeElement, 'arrow up focuses first item')
     })
 
@@ -116,7 +116,7 @@ describe('details-menu element', function() {
       first.focus()
       assert.equal(first, document.activeElement)
 
-      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}))
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))
       assert.equal(summary, document.activeElement, 'escape focuses summary')
       assert(!details.open, 'details toggles closed')
     })
@@ -209,7 +209,7 @@ describe('details-menu element', function() {
 
       summary.focus()
       summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}))
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}))
 
       const notDisabled = details.querySelectorAll('[role="menuitem"]')[2]
       assert.equal(notDisabled, document.activeElement, 'arrow focuses on the last non-disabled item')
@@ -229,7 +229,7 @@ describe('details-menu element', function() {
 
       summary.focus()
       summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}))
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}))
 
       const disabled = details.querySelector('[disabled]')
       document.addEventListener('details-menu-selected', () => eventCounter++, true)
@@ -377,7 +377,7 @@ describe('details-menu element', function() {
       summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       assert.equal(summary, document.activeElement, 'summary remains focused on toggle')
 
-      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}))
+      details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}))
       assert.equal(summary, document.activeElement, 'summary remains focused on navigation')
     })
   })

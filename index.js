@@ -221,9 +221,11 @@ function keydown(event: KeyboardEvent) {
 
   switch (event.key) {
     case 'Escape':
-      close(details)
-      event.preventDefault()
-      event.stopPropagation()
+      if (details.hasAttribute('open')) {
+        close(details)
+        event.preventDefault()
+        event.stopPropagation()
+      }
       break
     case 'ArrowDown':
       {

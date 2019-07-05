@@ -184,7 +184,11 @@ function shouldCommit(event: Event) {
 function updateChecked(selected: Element, details: Element) {
   for (const el of details.querySelectorAll('[role="menuitemradio"], [role="menuitemcheckbox"]')) {
     const input = el.querySelector('input[type="radio"], input[type="checkbox"]')
-    el.setAttribute('aria-checked', (input instanceof HTMLInputElement ? input.checked : el === selected).toString())
+    let checkState = el === selected
+    if (input instanceof HTMLInputElement) {
+      checkState = input.indeterminate ? 'mixed' : input.checked
+    }
+    el.setAttribute('aria-checked', checkState.toString())
   }
 }
 

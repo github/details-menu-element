@@ -25,8 +25,8 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@babel/cli": "^7.4.4",
-    "@babel/core": "^7.4.4",
+    "@babel/cli": "^7.5.0",
+    "@babel/core": "^7.5.0",
     "@babel/plugin-transform-modules-umd": "^7.2.0",
     "babel-preset-github": "^3.2.0",
     "chai": "^4.2.0",

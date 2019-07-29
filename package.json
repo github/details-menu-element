@@ -4,10 +4,12 @@
   "description": "A menu opened with a <details> button.",
   "main": "dist/index.umd.js",
   "module": "dist/index.esm.js",
+  "types": "index.d.ts",
   "license": "MIT",
   "repository": "github/details-menu-element",
   "files": [
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "keywords": [
     "details",

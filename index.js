@@ -96,10 +96,9 @@ function focusOnOpen(details: Element) {
   const onmousedown = () => (isMouse = true)
   const onkeydown = () => (isMouse = false)
   const ontoggle = () => {
-    autofocus(details)
-    if (details.hasAttribute('open') && !isMouse) {
-      focusFirstItem(details)
-    }
+    if (!details.hasAttribute('open')) return
+    if (autofocus(details)) return
+    if (!isMouse) focusFirstItem(details)
   }
 
   details.addEventListener('mousedown', onmousedown)
@@ -128,12 +127,14 @@ function closeCurrentMenu(event: Event) {
   }
 }
 
-function autofocus(details: Element) {
-  if (!details.hasAttribute('open')) return
-
+function autofocus(details: Element): boolean {
+  if (!details.hasAttribute('open')) return false
   const input = details.querySelector('[autofocus]')
   if (input) {
     input.focus()
+    return true
+  } else {
+    return false
   }
 }
 

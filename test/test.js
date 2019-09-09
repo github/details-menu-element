@@ -546,6 +546,51 @@ describe('details-menu element', function() {
     })
   })
 
+  describe('with input[autofocus]', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Menu 1</summary>
+          <details-menu src="/test">
+            <input autofocus>
+            <button role="menuitem">First item</button>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('autofocuses on input on mouse click', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const input = details.querySelector('input')
+
+      summary.focus()
+      details.open = true
+      summary.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}))
+      details.dispatchEvent(new CustomEvent('toggle'))
+      assert.equal(input, document.activeElement, 'mouse toggle open leaves summary focused')
+    })
+
+    it('autofocuses on input on keyboard activation', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const input = details.querySelector('input')
+
+      summary.focus()
+      details.open = true
+      summary.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+      details.dispatchEvent(new CustomEvent('toggle'))
+
+      assert.equal(input, document.activeElement, 'toggle open focuses on [autofocus]')
+    })
+  })
+
   describe('closing the menu', function() {
     beforeEach(function() {
       const container = document.createElement('div')

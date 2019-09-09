@@ -560,9 +560,11 @@ describe('details-menu element', function() {
       container.innerHTML = `
         <details>
           <summary>Menu 1</summary>
-          <details-menu src="/test">
+          <details-menu role="none">
             <input autofocus>
-            <button role="menuitem">First item</button>
+            <div role="menu">
+              <button role="menuitem">First item</button>
+            </div>
           </details-menu>
         </details>
       `
@@ -576,12 +578,14 @@ describe('details-menu element', function() {
     it('autofocuses on input on mouse click', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
+      const menu = details.querySelector('details-menu')
       const input = details.querySelector('input')
 
       summary.focus()
       details.open = true
       summary.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}))
       details.dispatchEvent(new CustomEvent('toggle'))
+      assert.equal(menu.getAttribute('role'), 'none')
       assert.equal(input, document.activeElement, 'mouse toggle open leaves summary focused')
     })
 

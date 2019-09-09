@@ -26,13 +26,16 @@ class DetailsMenuElement extends HTMLElement {
   }
 
   connectedCallback() {
-    this.setAttribute('role', 'menu')
+    if (!this.hasAttribute('role')) this.setAttribute('role', 'menu')
 
     const details = this.parentElement
     if (!details) return
 
     const summary = details.querySelector('summary')
-    if (summary) summary.setAttribute('aria-haspopup', 'menu')
+    if (summary) {
+      summary.setAttribute('aria-haspopup', 'menu')
+      if (!summary.hasAttribute('role')) summary.setAttribute('role', 'button')
+    }
 
     details.addEventListener('click', shouldCommit)
     details.addEventListener('change', shouldCommit)

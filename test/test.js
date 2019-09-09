@@ -34,6 +34,14 @@ describe('details-menu element', function() {
       document.body.innerHTML = ''
     })
 
+    it('has default attributes set', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const menu = details.querySelector('details-menu')
+      assert.equal(summary.getAttribute('role'), 'button')
+      assert.equal(menu.getAttribute('role'), 'menu')
+    })
+
     it('opens and does not focus an item on mouse click', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')

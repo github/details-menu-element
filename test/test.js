@@ -34,6 +34,14 @@ describe('details-menu element', function() {
       document.body.innerHTML = ''
     })
 
+    it('has default attributes set', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const menu = details.querySelector('details-menu')
+      assert.equal(summary.getAttribute('role'), 'button')
+      assert.equal(menu.getAttribute('role'), 'menu')
+    })
+
     it('opens and does not focus an item on mouse click', function() {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
@@ -543,6 +551,55 @@ describe('details-menu element', function() {
       details.open = true
       details.dispatchEvent(new CustomEvent('toggle'))
       assert(!response.hasAttribute('src'), 'toggle should not trigger second fetch')
+    })
+  })
+
+  describe('with input[autofocus]', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Menu 1</summary>
+          <details-menu role="none">
+            <input autofocus>
+            <div role="menu">
+              <button role="menuitem">First item</button>
+            </div>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('autofocuses on input on mouse click', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const menu = details.querySelector('details-menu')
+      const input = details.querySelector('input')
+
+      summary.focus()
+      details.open = true
+      summary.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}))
+      details.dispatchEvent(new CustomEvent('toggle'))
+      assert.equal(menu.getAttribute('role'), 'none')
+      assert.equal(input, document.activeElement, 'mouse toggle open leaves summary focused')
+    })
+
+    it('autofocuses on input on keyboard activation', function() {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const input = details.querySelector('input')
+
+      summary.focus()
+      details.open = true
+      summary.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+      details.dispatchEvent(new CustomEvent('toggle'))
+
+      assert.equal(input, document.activeElement, 'toggle open focuses on [autofocus]')
     })
   })
 

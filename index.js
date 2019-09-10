@@ -26,13 +26,16 @@ class DetailsMenuElement extends HTMLElement {
   }
 
   connectedCallback() {
-    this.setAttribute('role', 'menu')
+    if (!this.hasAttribute('role')) this.setAttribute('role', 'menu')
 
     const details = this.parentElement
     if (!details) return
 
     const summary = details.querySelector('summary')
-    if (summary) summary.setAttribute('aria-haspopup', 'menu')
+    if (summary) {
+      summary.setAttribute('aria-haspopup', 'menu')
+      if (!summary.hasAttribute('role')) summary.setAttribute('role', 'button')
+    }
 
     details.addEventListener('click', shouldCommit)
     details.addEventListener('change', shouldCommit)
@@ -96,10 +99,9 @@ function focusOnOpen(details: Element) {
   const onmousedown = () => (isMouse = true)
   const onkeydown = () => (isMouse = false)
   const ontoggle = () => {
-    autofocus(details)
-    if (details.hasAttribute('open') && !isMouse) {
-      focusFirstItem(details)
-    }
+    if (!details.hasAttribute('open')) return
+    if (autofocus(details)) return
+    if (!isMouse) focusFirstItem(details)
   }
 
   details.addEventListener('mousedown', onmousedown)
@@ -128,12 +130,14 @@ function closeCurrentMenu(event: Event) {
   }
 }
 
-function autofocus(details: Element) {
-  if (!details.hasAttribute('open')) return
-
+function autofocus(details: Element): boolean {
+  if (!details.hasAttribute('open')) return false
   const input = details.querySelector('[autofocus]')
   if (input) {
     input.focus()
+    return true
+  } else {
+    return false
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@github/details-menu-element",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A menu opened with a <details> button.",
   "main": "dist/index.umd.js",
   "module": "dist/index.esm.js",

@@ -5,6 +5,6 @@ export default class DetailsMenuElement extends HTMLElement {
 
 declare global {
   interface Window {
-    DetailsMenuElement: DetailsMenuElement
+    DetailsMenuElement: typeof DetailsMenuElement
   }
 }

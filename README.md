@@ -25,7 +25,7 @@ import '@github/details-menu-element'
 </details>
 ```
 
-Use `data-menu-button` and `data-menu-button-text` to have button text updated on menu item activation.
+Use `data-menu-button` and `data-menu-button-text` to update the button's text on menu item activation.
 
 ```html
 <details>
@@ -34,6 +34,19 @@ Use `data-menu-button` and `data-menu-button-text` to have button text updated o
     <button type="button" role="menuitem" data-menu-button-text>Hubot</button>
     <button type="button" role="menuitem" data-menu-button-text>Bender</button>
     <button type="button" role="menuitem" data-menu-button-text>BB-8</button>
+  </details-menu>
+</details>
+```
+
+Use `data-menu-button` and `data-menu-button-contents` to update the button's HTML content on menu item activation.
+
+```html
+<details>
+  <summary>Preferred robot: <span data-menu-button>None</span></summary>
+  <details-menu role="menu">
+    <button type="button" role="menuitem" data-menu-button-contents><img src="hubot.png"> Hubot</button>
+    <button type="button" role="menuitem" data-menu-button-contents><img src="bender.png"> Bender</button>
+    <button type="button" role="menuitem" data-menu-button-contents><img src="bb8.png"> BB-8</button>
   </details-menu>
 </details>
 ```

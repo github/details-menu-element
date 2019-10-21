@@ -104,11 +104,11 @@ the menu is opened.
 <details>
   <summary>Robots</summary>
   <details-menu input="filter-robots">
-    <input id="filter-robots">
-    <div role="menu">
-      <button role="menuitem">Bender</button>
-      <button role="menuitem">Hubot</button>
-      <button role="menuitem">R2-D2</button>
+    <input id="filter-robots" aria-owns="menu-container">
+    <div role="menu" id="menu-container">
+      <button role="menuitem" id="Bender">Bender</button>
+      <button role="menuitem" id="Hubot">Hubot</button>
+      <button role="menuitem" id="R2-D2">R2-D2</button>
     </div>
   </details-menu>
 </details>

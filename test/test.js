@@ -650,4 +650,48 @@ describe('details-menu element', function() {
       assert.isFalse(dialogClosed)
     })
   })
+
+  describe('support input based navigation the menu', function() {
+    beforeEach(function() {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details open>
+          <summary data-menu-button><em>Click</em></summary>
+          <details-menu input="filter-input">
+            <input id="filter-input">
+            <button type="button" role="menuitem">Hubot</button>
+            <button type="button" role="menuitem">Bender</button>
+            <button type="button" role="menuitem">BB-8</button>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function() {
+      document.body.innerHTML = ''
+    })
+
+    it('navigate from input', function() {
+      const details = document.querySelector('details')
+      const menu = details.querySelector('details-menu')
+      const input = details.querySelector('input')
+      const items = menu.querySelectorAll('[role="menuitem"]')
+
+      assert.notOk(menu.hasAttribute('role'), 'details-menu should not have role attribute when input is set')
+
+      input.focus()
+      input.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}))
+
+      assert.equal(input, document.activeElement, 'focus stays on input')
+      assert.equal(input.getAttribute('aria-activedescendant'), items[0].id, 'activedescendant is set')
+      assert.equal(items[0].getAttribute('aria-selected'), 'true')
+
+      items[1].focus()
+
+      assert.notOk(input.hasAttribute('aria-activedescendant'), 'activedescendant is removed')
+      assert.notOk(items[0].hasAttribute('aria-selected'))
+      assert.notOk(items[1].hasAttribute('aria-selected'))
+    })
+  })
 })

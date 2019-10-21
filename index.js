@@ -314,11 +314,12 @@ function focus(target) {
   const menu = target.closest('details-menu')
   if (!(menu instanceof DetailsMenuElement)) return
   clearFocus(menu)
+  const input = menu.input
 
-  if (menu.input && document.activeElement === menu.input) {
+  if (input && document.activeElement === input) {
     if (!target.id) target.id = `rand-${(Math.random() * 1000).toFixed(0)}`
-    menu.input.setAttribute('aria-activedescendant', target.id)
     target.setAttribute('aria-selected', 'true')
+    input.setAttribute('aria-activedescendant', target.id)
   } else {
     target.focus()
   }

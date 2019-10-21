@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <title>details-menu demo</title>
   <style>
+    details-menu [role][aria-selected="true"],
+    details-menu [role]:focus {
+      background: blue;
+      color: white;
+    }
     details-menu {
       background: white;
       border: 1px solid;
@@ -20,6 +25,11 @@
       width: 100%;
       text-align: left;
       padding: 0;
+    }
+    input[type="text"] {
+      box-sizing: border-box;
+      margin-bottom: 4px;
+      width: 100%;
     }
   </style>
 </head>
@@ -57,6 +67,18 @@
       <button type="submit" name="robot" value="Hubot" role="menuitemradio" data-menu-button-text>Hubot</button>
       <button type="submit" name="robot" value="Bender" role="menuitemradio" data-menu-button-text>Bender</button>
       <button type="submit" name="robot" value="BB-8" role="menuitemradio" data-menu-button-text>BB-8</button>
+    </details-menu>
+  </details>
+
+  <details>
+    <summary>Best robot: <span data-menu-button>Unknown</span></summary>
+    <details-menu input="filter-input">
+      <input id="filter-input" type="text" autofocus>
+      <div role="menu">
+        <button type="button" role="menuitem" data-menu-button-text>Hubot</button>
+        <button type="button" role="menuitem" data-menu-button-text>Bender</button>
+        <button type="button" role="menuitem" data-menu-button-text>BB-8</button>
+      </div>
     </details-menu>
   </details>
 

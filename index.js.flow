@@ -5,6 +5,7 @@ declare class DetailsMenuElement extends HTMLElement {
   set preload(value: boolean): void;
   get src(): string;
   set src(url: string): void;
+  get input(): ?HTMLInputElement;
 }
 
 declare module '@github/details-menu-element' {

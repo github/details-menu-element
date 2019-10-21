@@ -25,8 +25,14 @@ class DetailsMenuElement extends HTMLElement {
     this.setAttribute('src', value)
   }
 
+  get input(): ?HTMLInputElement {
+    const inputId = this.getAttribute('input')
+    const input = inputId && document.getElementById(inputId)
+    return input instanceof HTMLInputElement ? input : null
+  }
+
   connectedCallback() {
-    if (!this.hasAttribute('role')) this.setAttribute('role', 'menu')
+    if (!this.hasAttribute('role') && !this.hasAttribute('input')) this.setAttribute('role', 'menu')
 
     const details = this.parentElement
     if (!details) return
@@ -35,6 +41,12 @@ class DetailsMenuElement extends HTMLElement {
     if (summary) {
       summary.setAttribute('aria-haspopup', 'menu')
       if (!summary.hasAttribute('role')) summary.setAttribute('role', 'button')
+    }
+
+    if (this.input) {
+      this.input.addEventListener('blur', () => {
+        clearFocus(this)
+      })
     }
 
     details.addEventListener('click', shouldCommit)
@@ -143,18 +155,29 @@ function autofocus(details: Element): boolean {
 
 // Focus first item unless an item is already focused.
 function focusFirstItem(details: Element) {
-  const selected = document.activeElement
+  const selected = getCurrentFocus(details)
   if (selected && isMenuItem(selected) && details.contains(selected)) return
 
   const target = sibling(details, true)
-  if (target) target.focus()
+  if (target) focus(target)
+}
+
+function getCurrentFocus(details: Element): ?HTMLElement {
+  const menu = details.querySelector('details-menu')
+  if (!(menu instanceof DetailsMenuElement)) return
+  let selected = document.activeElement
+  if (selected && menu.input && selected === menu.input) {
+    const id = menu.input.getAttribute('aria-activedescendant')
+    selected = id ? document.getElementById(id) : selected
+  }
+  return selected
 }
 
 function sibling(details: Element, next: boolean): ?HTMLElement {
   const options = Array.from(
     details.querySelectorAll('[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])')
   )
-  const selected = document.activeElement
+  const selected = getCurrentFocus(details)
   const index = options.indexOf(selected)
   const found = next ? options[index + 1] : options[index - 1]
   const def = next ? options[0] : options[options.length - 1]
@@ -241,7 +264,7 @@ function keydown(event: KeyboardEvent) {
           details.setAttribute('open', '')
         }
         const target = sibling(details, true)
-        if (target) target.focus()
+        if (target) focus(target)
         event.preventDefault()
       }
       break
@@ -251,7 +274,7 @@ function keydown(event: KeyboardEvent) {
           details.setAttribute('open', '')
         }
         const target = sibling(details, false)
-        if (target) target.focus()
+        if (target) focus(target)
         event.preventDefault()
       }
       break
@@ -259,7 +282,7 @@ function keydown(event: KeyboardEvent) {
       {
         if (ctrlBindings && event.ctrlKey) {
           const target = sibling(details, true)
-          if (target) target.focus()
+          if (target) focus(target)
           event.preventDefault()
         }
       }
@@ -268,7 +291,7 @@ function keydown(event: KeyboardEvent) {
       {
         if (ctrlBindings && event.ctrlKey) {
           const target = sibling(details, false)
-          if (target) target.focus()
+          if (target) focus(target)
           event.preventDefault()
         }
       }
@@ -276,7 +299,7 @@ function keydown(event: KeyboardEvent) {
     case ' ':
     case 'Enter':
       {
-        const selected = document.activeElement
+        const selected = getCurrentFocus(details)
         if (selected && isMenuItem(selected) && selected.closest('details') === details) {
           event.preventDefault()
           event.stopPropagation()
@@ -284,6 +307,27 @@ function keydown(event: KeyboardEvent) {
         }
       }
       break
+  }
+}
+
+function focus(target) {
+  const menu = target.closest('details-menu')
+  if (!(menu instanceof DetailsMenuElement)) return
+  clearFocus(menu)
+
+  if (menu.input && document.activeElement === menu.input) {
+    if (!target.id) target.id = `rand-${(Math.random() * 1000).toFixed(0)}`
+    menu.input.setAttribute('aria-activedescendant', target.id)
+    target.setAttribute('aria-selected', 'true')
+  } else {
+    target.focus()
+  }
+}
+
+function clearFocus(menu) {
+  if (menu.input) menu.input.removeAttribute('aria-activedescendant')
+  for (const el of menu.querySelectorAll('[role^="menuitem"][aria-selected="true"]')) {
+    el.removeAttribute('aria-selected')
   }
 }
 

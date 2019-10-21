@@ -98,6 +98,26 @@ If the `preload` attribute is present, the server fetch will begin on mouse
 hover over the `<details>` button, so the content may be loaded by the time
 the menu is opened.
 
+### Focus management via `<input>`
+
+```html
+<details>
+  <summary>Robots</summary>
+  <details-menu input="filter-robots">
+    <input id="filter-robots">
+    <div role="menu">
+      <button role="menuitem">Bender</button>
+      <button role="menuitem">Hubot</button>
+      <button role="menuitem">R2-D2</button>
+    </div>
+  </details-menu>
+</details>
+```
+
+The `input` attribute changes the keyboard navigation behavior of the menu. While navigating menu items with arrow keys, the input will retain focus.
+
+Focus state can be styled with `[aria-selected="true"]`.
+
 ## Browser support
 
 Browsers without native [custom element support][support] require a [polyfill][].

@@ -37,6 +37,8 @@ class DetailsMenuElement extends HTMLElement {
       if (!summary.hasAttribute('role')) summary.setAttribute('role', 'button')
     }
 
+    this.addEventListener('compositionstart', trackComposition)
+    this.addEventListener('compositionend', trackComposition)
     details.addEventListener('click', shouldCommit)
     details.addEventListener('change', shouldCommit)
     details.addEventListener('keydown', keydown)
@@ -47,7 +49,7 @@ class DetailsMenuElement extends HTMLElement {
     }
 
     const subscriptions = [focusOnOpen(details)]
-    states.set(this, {details, subscriptions, loaded: false})
+    states.set(this, {details, subscriptions, loaded: false, isComposing: false})
   }
 
   disconnectedCallback() {
@@ -60,6 +62,9 @@ class DetailsMenuElement extends HTMLElement {
     for (const sub of subscriptions) {
       sub.unsubscribe()
     }
+
+    this.addEventListener('compositionstart', trackComposition)
+    this.addEventListener('compositionend', trackComposition)
     details.removeEventListener('click', shouldCommit)
     details.removeEventListener('change', shouldCommit)
     details.removeEventListener('keydown', keydown)
@@ -222,6 +227,13 @@ function commit(selected: Element, details: Element) {
 function keydown(event: KeyboardEvent) {
   const details = event.currentTarget
   if (!(details instanceof Element)) return
+  const menu = details.querySelector('details-menu')
+  if (!menu) return
+  const state = states.get(menu)
+  if (!state) return
+  const {isComposing} = state
+  if (isComposing) return
+
   const isSummaryFocused = event.target instanceof Element && event.target.tagName === 'SUMMARY'
 
   // Ignore key presses from nested details.
@@ -324,6 +336,12 @@ function labelHTML(el: ?Element): ?string {
   const contentsEl = el.hasAttribute('data-menu-button-contents') ? el : el.querySelector('[data-menu-button-contents]')
 
   return contentsEl ? contentsEl.innerHTML : null
+}
+
+function trackComposition(event: Event) {
+  const state = states.get(event.currentTarget)
+  if (!state) return
+  state.isComposing = event.type === 'compositionstart'
 }
 
 export default DetailsMenuElement

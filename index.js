@@ -31,6 +31,17 @@ class DetailsMenuElement extends HTMLElement {
     return input instanceof HTMLInputElement ? input : null
   }
 
+  clearFocus() {
+    clearFocus(this)
+  }
+
+  selectFocusOrFirst() {
+    const details = this.parentElement
+    if (!details) return
+    const element = getFocusedMenuItem(details) || sibling(details, true)
+    if (element) element.click()
+  }
+
   connectedCallback() {
     if (!this.hasAttribute('role') && !this.hasAttribute('input')) this.setAttribute('role', 'menu')
 

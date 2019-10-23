@@ -6,6 +6,8 @@ declare class DetailsMenuElement extends HTMLElement {
   get src(): string;
   set src(url: string): void;
   get input(): ?HTMLInputElement;
+  clearFocus(): void;
+  selectFocusOrFirst(): void;
 }
 
 declare module '@github/details-menu-element' {

@@ -155,14 +155,14 @@ function autofocus(details: Element): boolean {
 
 // Focus first item unless an item is already focused.
 function focusFirstItem(details: Element) {
-  const selected = getCurrentFocus(details)
-  if (selected && isMenuItem(selected) && details.contains(selected)) return
+  const selected = getFocusedMenuItem(details)
+  if (selected) return
 
   const target = sibling(details, true)
   if (target) focus(target)
 }
 
-function getCurrentFocus(details: Element): ?HTMLElement {
+function getFocusedMenuItem(details: Element): ?HTMLElement {
   const menu = details.querySelector('details-menu')
   if (!(menu instanceof DetailsMenuElement)) return
   let selected = document.activeElement
@@ -170,14 +170,14 @@ function getCurrentFocus(details: Element): ?HTMLElement {
     const id = menu.input.getAttribute('aria-activedescendant')
     selected = id ? document.getElementById(id) : selected
   }
-  return selected
+  return selected && details.contains(selected) && isMenuItem(selected) ? selected : null
 }
 
 function sibling(details: Element, next: boolean): ?HTMLElement {
   const options = Array.from(
     details.querySelectorAll('[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])')
   )
-  const selected = getCurrentFocus(details)
+  const selected = getFocusedMenuItem(details)
   const index = options.indexOf(selected)
   const found = next ? options[index + 1] : options[index - 1]
   const def = next ? options[0] : options[options.length - 1]
@@ -299,8 +299,8 @@ function keydown(event: KeyboardEvent) {
     case ' ':
     case 'Enter':
       {
-        const selected = getCurrentFocus(details)
-        if (selected && isMenuItem(selected) && selected.closest('details') === details) {
+        const selected = getFocusedMenuItem(details)
+        if (selected) {
           event.preventDefault()
           event.stopPropagation()
           selected.click()

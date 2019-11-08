@@ -46,7 +46,7 @@ class DetailsMenuElement extends HTMLElement {
       this.preload
         ? fromEvent(details, 'mouseover', () => loadFragment(details, this), {once: true})
         : NullSubscription,
-      focusOnOpen(details)
+      ...focusOnOpen(details)
     ]
 
     states.set(this, {subscriptions, loaded: false})
@@ -63,6 +63,8 @@ class DetailsMenuElement extends HTMLElement {
 }
 
 const states = new WeakMap()
+
+type Subscription = {unsubscribe(): void}
 const NullSubscription = {unsubscribe() {}}
 
 function fromEvent(
@@ -70,7 +72,7 @@ function fromEvent(
   eventName: string,
   onNext: EventHandler,
   options: EventListenerOptionsOrUseCapture = false
-) {
+): Subscription {
   target.addEventListener(eventName, onNext, options)
   return {
     unsubscribe: () => {
@@ -96,7 +98,7 @@ function loadFragment(details: Element, menu: DetailsMenuElement) {
   }
 }
 
-function focusOnOpen(details: Element) {
+function focusOnOpen(details: Element): Array<Subscription> {
   let isMouse = false
   const onmousedown = () => (isMouse = true)
   const onkeydown = () => (isMouse = false)
@@ -106,17 +108,11 @@ function focusOnOpen(details: Element) {
     if (!isMouse) focusFirstItem(details)
   }
 
-  details.addEventListener('mousedown', onmousedown)
-  details.addEventListener('keydown', onkeydown)
-  details.addEventListener('toggle', ontoggle)
-
-  return {
-    unsubscribe: () => {
-      details.removeEventListener('mousedown', onmousedown)
-      details.removeEventListener('keydown', onkeydown)
-      details.removeEventListener('toggle', ontoggle)
-    }
-  }
+  return [
+    fromEvent(details, 'mousedown', onmousedown),
+    fromEvent(details, 'keydown', onkeydown),
+    fromEvent(details, 'toggle', ontoggle)
+  ]
 }
 
 function closeCurrentMenu(details: Element) {

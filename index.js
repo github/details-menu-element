@@ -37,17 +37,26 @@ class DetailsMenuElement extends HTMLElement {
       if (!summary.hasAttribute('role')) summary.setAttribute('role', 'button')
     }
 
-    details.addEventListener('click', shouldCommit)
-    details.addEventListener('change', shouldCommit)
-    details.addEventListener('keydown', keydown)
-    details.addEventListener('toggle', loadFragment, {once: true})
-    details.addEventListener('toggle', closeCurrentMenu)
-    if (this.preload) {
-      details.addEventListener('mouseover', loadFragment, {once: true})
-    }
-
     const subscriptions = [focusOnOpen(details)]
-    states.set(this, {details, subscriptions, loaded: false})
+    const state = {
+      details,
+      subscriptions,
+      loaded: false,
+      shouldCommit: shouldCommit.bind(null, details, this),
+      keydown: keydown.bind(null, details, this),
+      loadFragment: loadFragment.bind(null, details, this),
+      closeCurrentMenu: closeCurrentMenu.bind(null, details)
+    }
+    states.set(this, state)
+
+    details.addEventListener('click', state.shouldCommit)
+    details.addEventListener('change', state.shouldCommit)
+    details.addEventListener('keydown', state.keydown)
+    details.addEventListener('toggle', state.loadFragment, {once: true})
+    details.addEventListener('toggle', state.closeCurrentMenu)
+    if (this.preload) {
+      details.addEventListener('mouseover', state.loadFragment, {once: true})
+    }
   }
 
   disconnectedCallback() {
@@ -60,24 +69,18 @@ class DetailsMenuElement extends HTMLElement {
     for (const sub of subscriptions) {
       sub.unsubscribe()
     }
-    details.removeEventListener('click', shouldCommit)
-    details.removeEventListener('change', shouldCommit)
-    details.removeEventListener('keydown', keydown)
-    details.removeEventListener('toggle', loadFragment, {once: true})
-    details.removeEventListener('toggle', closeCurrentMenu)
-    details.removeEventListener('mouseover', loadFragment, {once: true})
+    details.removeEventListener('click', state.shouldCommit)
+    details.removeEventListener('change', state.shouldCommit)
+    details.removeEventListener('keydown', state.keydown)
+    details.removeEventListener('toggle', state.loadFragment, {once: true})
+    details.removeEventListener('toggle', state.closeCurrentMenu)
+    details.removeEventListener('mouseover', state.loadFragment, {once: true})
   }
 }
 
 const states = new WeakMap()
 
-function loadFragment(event: Event) {
-  const details = event.currentTarget
-  if (!(details instanceof Element)) return
-
-  const menu = details.querySelector('details-menu')
-  if (!menu) return
-
+function loadFragment(details: Element, menu: DetailsMenuElement) {
   const src = menu.getAttribute('src')
   if (!src) return
 
@@ -117,14 +120,12 @@ function focusOnOpen(details: Element) {
   }
 }
 
-function closeCurrentMenu(event: Event) {
-  const el = event.currentTarget
-  if (!(el instanceof Element)) return
-  if (!el.hasAttribute('open')) return
+function closeCurrentMenu(details: Element) {
+  if (!details.hasAttribute('open')) return
 
   for (const menu of document.querySelectorAll('details[open] > details-menu')) {
     const opened = menu.closest('details')
-    if (opened && opened !== el && !opened.contains(el)) {
+    if (opened && opened !== details && !opened.contains(details)) {
       opened.removeAttribute('open')
     }
   }
@@ -163,12 +164,9 @@ function sibling(details: Element, next: boolean): ?HTMLElement {
 
 const ctrlBindings = navigator.userAgent.match(/Macintosh/)
 
-function shouldCommit(event: Event) {
+function shouldCommit(details: Element, menu: DetailsMenuElement, event: Event) {
   const target = event.target
   if (!(target instanceof Element)) return
-
-  const details = event.currentTarget
-  if (!(details instanceof Element)) return
 
   // Ignore clicks from nested details.
   if (target.closest('details') !== details) return
@@ -219,9 +217,7 @@ function commit(selected: Element, details: Element) {
   )
 }
 
-function keydown(event: KeyboardEvent) {
-  const details = event.currentTarget
-  if (!(details instanceof Element)) return
+function keydown(details: Element, menu: DetailsMenuElement, event: KeyboardEvent) {
   const isSummaryFocused = event.target instanceof Element && event.target.tagName === 'SUMMARY'
 
   // Ignore key presses from nested details.

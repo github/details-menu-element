@@ -26,7 +26,13 @@ class DetailsMenuElement extends HTMLElement {
   }
 
   connectedCallback() {
-    if (!this.hasAttribute('role')) this.setAttribute('role', 'menu')
+    if (!this.hasAttribute('role')) {
+      this.setAttribute('role', 'menu')
+    }
+
+    if (!this.id) {
+      this.id = menuId()
+    }
 
     const details = this.parentElement
     if (!details) return
@@ -41,12 +47,14 @@ class DetailsMenuElement extends HTMLElement {
       fromEvent(details, 'click', e => shouldCommit(details, this, e)),
       fromEvent(details, 'change', e => shouldCommit(details, this, e)),
       fromEvent(details, 'keydown', e => keydown(details, this, e)),
+      fromEvent(details, 'toggle', () => clearFocus(details, this)),
+      fromEvent(details, 'toggle', () => identifyItems(this), {once: true}),
       fromEvent(details, 'toggle', () => loadFragment(details, this), {once: true}),
       fromEvent(details, 'toggle', () => closeCurrentMenu(details)),
       this.preload
         ? fromEvent(details, 'mouseover', () => loadFragment(details, this), {once: true})
         : NullSubscription,
-      ...focusOnOpen(details)
+      ...focusOnOpen(details, this)
     ]
 
     states.set(this, {subscriptions, loaded: false})
@@ -93,19 +101,20 @@ function loadFragment(details: Element, menu: DetailsMenuElement) {
 
   const loader = menu.querySelector('include-fragment')
   if (loader && !loader.hasAttribute('src')) {
+    loader.addEventListener('loadend', () => identifyItems(menu))
     loader.addEventListener('loadend', () => autofocus(details))
     loader.setAttribute('src', src)
   }
 }
 
-function focusOnOpen(details: Element): Array<Subscription> {
+function focusOnOpen(details: Element, menu: DetailsMenuElement): Array<Subscription> {
   let isMouse = false
   const onmousedown = () => (isMouse = true)
   const onkeydown = () => (isMouse = false)
   const ontoggle = () => {
     if (!details.hasAttribute('open')) return
     if (autofocus(details)) return
-    if (!isMouse) focusFirstItem(details)
+    if (!isMouse) focusFirstItem(details, menu)
   }
 
   return [
@@ -138,19 +147,24 @@ function autofocus(details: Element): boolean {
 }
 
 // Focus first item unless an item is already focused.
-function focusFirstItem(details: Element) {
-  const selected = document.activeElement
+function focusFirstItem(details: Element, menu: DetailsMenuElement) {
+  const selected = activeItem(menu)
   if (selected && isMenuItem(selected) && details.contains(selected)) return
 
-  const target = sibling(details, true)
-  if (target) target.focus()
+  const target = sibling(menu, true)
+  if (target) focus(menu, target)
 }
 
-function sibling(details: Element, next: boolean): ?HTMLElement {
+function activeItem(menu: DetailsMenuElement): ?HTMLElement {
+  const id = menu.getAttribute('aria-activedescendant')
+  return id ? document.getElementById(id) : null
+}
+
+function sibling(menu: DetailsMenuElement, next: boolean): ?HTMLElement {
   const options = Array.from(
-    details.querySelectorAll('[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])')
+    menu.querySelectorAll('[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])')
   )
-  const selected = document.activeElement
+  const selected = activeItem(menu)
   const index = options.indexOf(selected)
   const found = next ? options[index + 1] : options[index - 1]
   const def = next ? options[0] : options[options.length - 1]
@@ -170,11 +184,11 @@ function shouldCommit(details: Element, menu: DetailsMenuElement, event: Event) 
     const menuitem = target.closest('[role="menuitem"], [role="menuitemradio"]')
     const onlyCommitOnChangeEvent = menuitem && menuitem.tagName === 'LABEL' && menuitem.querySelector('input')
     if (menuitem && !onlyCommitOnChangeEvent) {
-      commit(menuitem, details)
+      commit(menuitem, details, menu)
     }
   } else if (event.type === 'change') {
     const menuitem = target.closest('[role="menuitemradio"], [role="menuitemcheckbox"]')
-    if (menuitem) commit(menuitem, details)
+    if (menuitem) commit(menuitem, details, menu)
   }
 }
 
@@ -189,10 +203,8 @@ function updateChecked(selected: Element, details: Element) {
   }
 }
 
-function commit(selected: Element, details: Element) {
+function commit(selected: Element, details: Element, menu: DetailsMenuElement) {
   if (selected.hasAttribute('disabled') || selected.getAttribute('aria-disabled') === 'true') return
-  const menu = selected.closest('details-menu')
-  if (!menu) return
 
   const dispatched = menu.dispatchEvent(
     new CustomEvent('details-menu-select', {
@@ -210,6 +222,34 @@ function commit(selected: Element, details: Element) {
       detail: {relatedTarget: selected}
     })
   )
+}
+
+let currentMenuId = 0
+function menuId(): string {
+  return `details-menu-${currentMenuId++}`
+}
+
+function identifyItems(menu: Element) {
+  let id = 0
+  for (const el of menu.querySelectorAll('[role^="menuitem"]:not([id])')) {
+    el.id = `${menu.id}-item-${id++}`
+  }
+}
+
+function focus(menu: DetailsMenuElement, item: HTMLElement) {
+  menu.setAttribute('aria-activedescendant', item.id)
+  for (const el of menu.querySelectorAll('[role^=menuitem][data-menu-item-focus]')) {
+    el.removeAttribute('data-menu-item-focus')
+  }
+  item.setAttribute('data-menu-item-focus', '')
+}
+
+function clearFocus(details: Element, menu: DetailsMenuElement) {
+  if (details.hasAttribute('open')) return
+  menu.removeAttribute('aria-activedescendant')
+  for (const el of menu.querySelectorAll('[role^="menuitem"][data-menu-item-focus]')) {
+    el.removeAttribute('data-menu-item-focus')
+  }
 }
 
 function keydown(details: Element, menu: DetailsMenuElement, event: Event) {
@@ -232,8 +272,8 @@ function keydown(details: Element, menu: DetailsMenuElement, event: Event) {
         if (isSummaryFocused && !details.hasAttribute('open')) {
           details.setAttribute('open', '')
         }
-        const target = sibling(details, true)
-        if (target) target.focus()
+        const target = sibling(menu, true)
+        if (target) focus(menu, target)
         event.preventDefault()
       }
       break
@@ -242,16 +282,16 @@ function keydown(details: Element, menu: DetailsMenuElement, event: Event) {
         if (isSummaryFocused && !details.hasAttribute('open')) {
           details.setAttribute('open', '')
         }
-        const target = sibling(details, false)
-        if (target) target.focus()
+        const target = sibling(menu, false)
+        if (target) focus(menu, target)
         event.preventDefault()
       }
       break
     case 'n':
       {
         if (ctrlBindings && event.ctrlKey) {
-          const target = sibling(details, true)
-          if (target) target.focus()
+          const target = sibling(menu, true)
+          if (target) focus(menu, target)
           event.preventDefault()
         }
       }
@@ -259,8 +299,8 @@ function keydown(details: Element, menu: DetailsMenuElement, event: Event) {
     case 'p':
       {
         if (ctrlBindings && event.ctrlKey) {
-          const target = sibling(details, false)
-          if (target) target.focus()
+          const target = sibling(menu, false)
+          if (target) focus(menu, target)
           event.preventDefault()
         }
       }
@@ -268,7 +308,7 @@ function keydown(details: Element, menu: DetailsMenuElement, event: Event) {
     case ' ':
     case 'Enter':
       {
-        const selected = document.activeElement
+        const selected = activeItem(menu)
         if (selected && isMenuItem(selected) && selected.closest('details') === details) {
           event.preventDefault()
           event.stopPropagation()

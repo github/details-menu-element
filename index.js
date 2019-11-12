@@ -242,6 +242,7 @@ function focus(menu: DetailsMenuElement, item: HTMLElement) {
     el.removeAttribute('data-menu-item-focus')
   }
   item.setAttribute('data-menu-item-focus', '')
+  item.scrollIntoView({block: 'nearest'})
 }
 
 function clearFocus(details: Element, menu: DetailsMenuElement) {

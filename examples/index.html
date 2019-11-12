@@ -66,6 +66,18 @@
     </details-menu>
   </details>
 
+  <details>
+    <summary data-menu-button>Filter robots</summary>
+    <details-menu role="none">
+      <input autofocus aria-owns="filter-menu">
+      <div role="menu" id="filter-menu">
+        <button type="submit" name="robot" value="Hubot" role="menuitemradio" data-menu-button-text>Hubot</button>
+        <button type="submit" name="robot" value="Bender" role="menuitemradio" data-menu-button-text>Bender</button>
+        <button type="submit" name="robot" value="BB-8" role="menuitemradio" data-menu-button-text>BB-8</button>
+      </div>
+    </details-menu>
+  </details>
+
   <script type="text/javascript">
     document.addEventListener('details-menu-selected', e => console.log(e))
   </script>

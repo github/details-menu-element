@@ -43,6 +43,8 @@ class DetailsMenuElement extends HTMLElement {
       if (!summary.hasAttribute('role')) summary.setAttribute('role', 'button')
     }
 
+    const container = this.getAttribute('role') === 'menu' ? this : this.querySelector('[role="menu"]')
+
     const subscriptions = [
       fromEvent(details, 'click', e => shouldCommit(details, this, e)),
       fromEvent(details, 'change', e => shouldCommit(details, this, e)),
@@ -57,7 +59,7 @@ class DetailsMenuElement extends HTMLElement {
       ...focusOnOpen(details, this)
     ]
 
-    states.set(this, {subscriptions, loaded: false})
+    states.set(this, {container, subscriptions, loaded: false})
   }
 
   disconnectedCallback() {
@@ -156,7 +158,11 @@ function focusFirstItem(details: Element, menu: DetailsMenuElement) {
 }
 
 function activeItem(menu: DetailsMenuElement): ?HTMLElement {
-  const id = menu.getAttribute('aria-activedescendant')
+  const state = states.get(menu)
+  const container = state ? state.container : null
+  if (!container) return
+
+  const id = container.getAttribute('aria-activedescendant')
   return id ? document.getElementById(id) : null
 }
 
@@ -237,7 +243,11 @@ function identifyItems(menu: Element) {
 }
 
 function focus(menu: DetailsMenuElement, item: HTMLElement) {
-  menu.setAttribute('aria-activedescendant', item.id)
+  const state = states.get(menu)
+  const container = state ? state.container : null
+  if (!container) return
+
+  container.setAttribute('aria-activedescendant', item.id)
   for (const el of menu.querySelectorAll('[role^=menuitem][data-menu-item-focus]')) {
     el.removeAttribute('data-menu-item-focus')
   }
@@ -247,7 +257,12 @@ function focus(menu: DetailsMenuElement, item: HTMLElement) {
 
 function clearFocus(details: Element, menu: DetailsMenuElement) {
   if (details.hasAttribute('open')) return
-  menu.removeAttribute('aria-activedescendant')
+
+  const state = states.get(menu)
+  const container = state ? state.container : null
+  if (!container) return
+
+  container.removeAttribute('aria-activedescendant')
   for (const el of menu.querySelectorAll('[role^="menuitem"][data-menu-item-focus]')) {
     el.removeAttribute('data-menu-item-focus')
   }

@@ -51,6 +51,7 @@ describe('details-menu element', function() {
       summary.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}))
       details.dispatchEvent(new CustomEvent('toggle'))
       assert.equal(summary, document.activeElement, 'mouse toggle open leaves summary focused')
+      assert.isNull(details.querySelector('[aria-activedescendant]'))
     })
 
     it('opens and focuses first item on summary enter', function() {
@@ -63,7 +64,8 @@ describe('details-menu element', function() {
       details.dispatchEvent(new CustomEvent('toggle'))
 
       const first = details.querySelector('[role="menuitem"]')
-      assert.equal(first, document.activeElement, 'toggle open focuses first item')
+      assert.equal(summary, document.activeElement)
+      assertActiveDescendant(details, first)
     })
 
     it('opens and focuses first item on arrow down', function() {
@@ -77,7 +79,8 @@ describe('details-menu element', function() {
       assert(details.open, 'menu is open')
 
       const first = details.querySelector('[role="menuitem"]')
-      assert.equal(first, document.activeElement, 'arrow focuses first item')
+      assert.equal(summary, document.activeElement)
+      assertActiveDescendant(details, first)
     })
 
     it('opens and focuses last item on arrow up', function() {
@@ -91,7 +94,8 @@ describe('details-menu element', function() {
       assert(details.open, 'menu is open')
 
       const last = [...details.querySelectorAll('[role="menuitem"]:not([disabled]):not([aria-disabled])')].pop()
-      assert.equal(last, document.activeElement, 'arrow focuses last item')
+      assert.equal(summary, document.activeElement)
+      assertActiveDescendant(details, last)
     })
 
     it('navigates items with arrow keys', function() {
@@ -105,13 +109,16 @@ describe('details-menu element', function() {
       assert(rest)
 
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}))
-      assert.equal(first, document.activeElement, 'arrow down focuses first item')
+      assert.equal(summary, document.activeElement)
+      assertActiveDescendant(details, first)
 
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}))
-      assert.equal(second, document.activeElement, 'arrow down focuses second item')
+      assert.equal(summary, document.activeElement)
+      assertActiveDescendant(details, second)
 
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}))
-      assert.equal(first, document.activeElement, 'arrow up focuses first item')
+      assert.equal(summary, document.activeElement)
+      assertActiveDescendant(details, first)
     })
 
     it('closes and focuses summary on escape', function() {
@@ -220,7 +227,7 @@ describe('details-menu element', function() {
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}))
 
       const notDisabled = details.querySelectorAll('[role="menuitem"]')[2]
-      assert.equal(notDisabled, document.activeElement, 'arrow focuses on the last non-disabled item')
+      assertActiveDescendant(details, notDisabled)
 
       const disabled = details.querySelector('[aria-disabled="true"]')
       document.addEventListener('details-menu-selected', () => eventCounter++, true)
@@ -651,3 +658,8 @@ describe('details-menu element', function() {
     })
   })
 })
+
+function assertActiveDescendant(details, expected) {
+  const menu = details.querySelector('[role=menu]')
+  assert.equal(menu.getAttribute('aria-activedescendant'), expected.id)
+}

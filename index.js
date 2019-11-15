@@ -216,13 +216,12 @@ function commit(selected: Element, details: Element) {
 
 function keydown(details: Element, menu: DetailsMenuElement, event: Event) {
   if (!(event instanceof KeyboardEvent)) return
-  const state = states.get(menu)
-  if (!state) return
-  if (state.isComposing) return
-  const isSummaryFocused = event.target instanceof Element && event.target.tagName === 'SUMMARY'
-
   // Ignore key presses from nested details.
   if (details.querySelector('details[open]')) return
+  const state = states.get(menu)
+  if (!state || state.isComposing) return
+
+  const isSummaryFocused = event.target instanceof Element && event.target.tagName === 'SUMMARY'
 
   switch (event.key) {
     case 'Escape':

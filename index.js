@@ -38,6 +38,8 @@ class DetailsMenuElement extends HTMLElement {
     }
 
     const subscriptions = [
+      fromEvent(details, 'compositionstart', e => trackComposition(this, e)),
+      fromEvent(details, 'compositionend', e => trackComposition(this, e)),
       fromEvent(details, 'click', e => shouldCommit(details, this, e)),
       fromEvent(details, 'change', e => shouldCommit(details, this, e)),
       fromEvent(details, 'keydown', e => keydown(details, this, e)),
@@ -49,7 +51,7 @@ class DetailsMenuElement extends HTMLElement {
       ...focusOnOpen(details)
     ]
 
-    states.set(this, {subscriptions, loaded: false})
+    states.set(this, {subscriptions, loaded: false, isComposing: false})
   }
 
   disconnectedCallback() {
@@ -214,10 +216,12 @@ function commit(selected: Element, details: Element) {
 
 function keydown(details: Element, menu: DetailsMenuElement, event: Event) {
   if (!(event instanceof KeyboardEvent)) return
-  const isSummaryFocused = event.target instanceof Element && event.target.tagName === 'SUMMARY'
-
   // Ignore key presses from nested details.
   if (details.querySelector('details[open]')) return
+  const state = states.get(menu)
+  if (!state || state.isComposing) return
+
+  const isSummaryFocused = event.target instanceof Element && event.target.tagName === 'SUMMARY'
 
   switch (event.key) {
     case 'Escape':
@@ -316,6 +320,12 @@ function labelHTML(el: ?Element): ?string {
   const contentsEl = el.hasAttribute('data-menu-button-contents') ? el : el.querySelector('[data-menu-button-contents]')
 
   return contentsEl ? contentsEl.innerHTML : null
+}
+
+function trackComposition(menu, event: Event) {
+  const state = states.get(menu)
+  if (!state) return
+  state.isComposing = event.type === 'compositionstart'
 }
 
 export default DetailsMenuElement

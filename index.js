@@ -37,52 +37,53 @@ class DetailsMenuElement extends HTMLElement {
       if (!summary.hasAttribute('role')) summary.setAttribute('role', 'button')
     }
 
-    this.addEventListener('compositionstart', trackComposition)
-    this.addEventListener('compositionend', trackComposition)
-    details.addEventListener('click', shouldCommit)
-    details.addEventListener('change', shouldCommit)
-    details.addEventListener('keydown', keydown)
-    details.addEventListener('toggle', loadFragment, {once: true})
-    details.addEventListener('toggle', closeCurrentMenu)
-    if (this.preload) {
-      details.addEventListener('mouseover', loadFragment, {once: true})
-    }
+    const subscriptions = [
+      fromEvent(details, 'compositionstart', e => trackComposition(this, e)),
+      fromEvent(details, 'compositionend', e => trackComposition(this, e)),
+      fromEvent(details, 'click', e => shouldCommit(details, this, e)),
+      fromEvent(details, 'change', e => shouldCommit(details, this, e)),
+      fromEvent(details, 'keydown', e => keydown(details, this, e)),
+      fromEvent(details, 'toggle', () => loadFragment(details, this), {once: true}),
+      fromEvent(details, 'toggle', () => closeCurrentMenu(details)),
+      this.preload
+        ? fromEvent(details, 'mouseover', () => loadFragment(details, this), {once: true})
+        : NullSubscription,
+      ...focusOnOpen(details)
+    ]
 
-    const subscriptions = [focusOnOpen(details)]
-    states.set(this, {details, subscriptions, loaded: false, isComposing: false})
+    states.set(this, {subscriptions, loaded: false, isComposing: false})
   }
 
   disconnectedCallback() {
     const state = states.get(this)
     if (!state) return
-
     states.delete(this)
-
-    const {details, subscriptions} = state
-    for (const sub of subscriptions) {
+    for (const sub of state.subscriptions) {
       sub.unsubscribe()
     }
-
-    this.addEventListener('compositionstart', trackComposition)
-    this.addEventListener('compositionend', trackComposition)
-    details.removeEventListener('click', shouldCommit)
-    details.removeEventListener('change', shouldCommit)
-    details.removeEventListener('keydown', keydown)
-    details.removeEventListener('toggle', loadFragment, {once: true})
-    details.removeEventListener('toggle', closeCurrentMenu)
-    details.removeEventListener('mouseover', loadFragment, {once: true})
   }
 }
 
 const states = new WeakMap()
 
-function loadFragment(event: Event) {
-  const details = event.currentTarget
-  if (!(details instanceof Element)) return
+type Subscription = {unsubscribe(): void}
+const NullSubscription = {unsubscribe() {}}
 
-  const menu = details.querySelector('details-menu')
-  if (!menu) return
+function fromEvent(
+  target: EventTarget,
+  eventName: string,
+  onNext: EventHandler,
+  options: EventListenerOptionsOrUseCapture = false
+): Subscription {
+  target.addEventListener(eventName, onNext, options)
+  return {
+    unsubscribe: () => {
+      target.removeEventListener(eventName, onNext, options)
+    }
+  }
+}
 
+function loadFragment(details: Element, menu: DetailsMenuElement) {
   const src = menu.getAttribute('src')
   if (!src) return
 
@@ -99,7 +100,7 @@ function loadFragment(event: Event) {
   }
 }
 
-function focusOnOpen(details: Element) {
+function focusOnOpen(details: Element): Array<Subscription> {
   let isMouse = false
   const onmousedown = () => (isMouse = true)
   const onkeydown = () => (isMouse = false)
@@ -109,27 +110,19 @@ function focusOnOpen(details: Element) {
     if (!isMouse) focusFirstItem(details)
   }
 
-  details.addEventListener('mousedown', onmousedown)
-  details.addEventListener('keydown', onkeydown)
-  details.addEventListener('toggle', ontoggle)
-
-  return {
-    unsubscribe: () => {
-      details.removeEventListener('mousedown', onmousedown)
-      details.removeEventListener('keydown', onkeydown)
-      details.removeEventListener('toggle', ontoggle)
-    }
-  }
+  return [
+    fromEvent(details, 'mousedown', onmousedown),
+    fromEvent(details, 'keydown', onkeydown),
+    fromEvent(details, 'toggle', ontoggle)
+  ]
 }
 
-function closeCurrentMenu(event: Event) {
-  const el = event.currentTarget
-  if (!(el instanceof Element)) return
-  if (!el.hasAttribute('open')) return
+function closeCurrentMenu(details: Element) {
+  if (!details.hasAttribute('open')) return
 
   for (const menu of document.querySelectorAll('details[open] > details-menu')) {
     const opened = menu.closest('details')
-    if (opened && opened !== el && !opened.contains(el)) {
+    if (opened && opened !== details && !opened.contains(details)) {
       opened.removeAttribute('open')
     }
   }
@@ -168,12 +161,9 @@ function sibling(details: Element, next: boolean): ?HTMLElement {
 
 const ctrlBindings = navigator.userAgent.match(/Macintosh/)
 
-function shouldCommit(event: Event) {
+function shouldCommit(details: Element, menu: DetailsMenuElement, event: Event) {
   const target = event.target
   if (!(target instanceof Element)) return
-
-  const details = event.currentTarget
-  if (!(details instanceof Element)) return
 
   // Ignore clicks from nested details.
   if (target.closest('details') !== details) return
@@ -224,16 +214,11 @@ function commit(selected: Element, details: Element) {
   )
 }
 
-function keydown(event: KeyboardEvent) {
-  const details = event.currentTarget
-  if (!(details instanceof Element)) return
-  const menu = details.querySelector('details-menu')
-  if (!menu) return
+function keydown(details: Element, menu: DetailsMenuElement, event: Event) {
+  if (!(event instanceof KeyboardEvent)) return
   const state = states.get(menu)
   if (!state) return
-  const {isComposing} = state
-  if (isComposing) return
-
+  if (state.isComposing) return
   const isSummaryFocused = event.target instanceof Element && event.target.tagName === 'SUMMARY'
 
   // Ignore key presses from nested details.
@@ -338,8 +323,8 @@ function labelHTML(el: ?Element): ?string {
   return contentsEl ? contentsEl.innerHTML : null
 }
 
-function trackComposition(event: Event) {
-  const state = states.get(event.currentTarget)
+function trackComposition(menu, event: Event) {
+  const state = states.get(menu)
   if (!state) return
   state.isComposing = event.type === 'compositionstart'
 }

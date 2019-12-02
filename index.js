@@ -38,12 +38,17 @@ class DetailsMenuElement extends HTMLElement {
     if (!details) return
 
     const summary = details.querySelector('summary')
-    if (summary) {
-      summary.setAttribute('aria-haspopup', 'menu')
-      if (!summary.hasAttribute('role')) summary.setAttribute('role', 'button')
+    if (!summary) return
+
+    summary.setAttribute('aria-haspopup', 'menu')
+    if (!summary.hasAttribute('role')) {
+      summary.setAttribute('role', 'button')
     }
 
-    const container = this.getAttribute('role') === 'menu' ? this : this.querySelector('[role="menu"]')
+    const inputId = this.getAttribute('input')
+    const input = inputId ? document.getElementById(inputId) : null
+
+    const control = input || summary
 
     const subscriptions = [
       fromEvent(details, 'click', e => shouldCommit(details, this, e)),
@@ -59,7 +64,7 @@ class DetailsMenuElement extends HTMLElement {
       ...focusOnOpen(details, this)
     ]
 
-    states.set(this, {container, subscriptions, loaded: false})
+    states.set(this, {control, subscriptions, loaded: false})
   }
 
   disconnectedCallback() {
@@ -159,10 +164,10 @@ function focusFirstItem(details: Element, menu: DetailsMenuElement) {
 
 function activeItem(menu: DetailsMenuElement): ?HTMLElement {
   const state = states.get(menu)
-  const container = state ? state.container : null
-  if (!container) return
+  const control = state ? state.control : null
+  if (!control) return
 
-  const id = container.getAttribute('aria-activedescendant')
+  const id = control.getAttribute('aria-activedescendant')
   return id ? document.getElementById(id) : null
 }
 
@@ -244,14 +249,14 @@ function identifyItems(menu: Element) {
 
 function focus(menu: DetailsMenuElement, item: HTMLElement) {
   const state = states.get(menu)
-  const container = state ? state.container : null
-  if (!container) return
+  const control = state ? state.control : null
+  if (!control) return
 
-  container.setAttribute('aria-activedescendant', item.id)
-  for (const el of menu.querySelectorAll('[role^=menuitem][data-menu-item-focus]')) {
-    el.removeAttribute('data-menu-item-focus')
+  control.setAttribute('aria-activedescendant', item.id)
+  for (const el of menu.querySelectorAll('[role^=menuitem][aria-selected]')) {
+    el.removeAttribute('aria-selected')
   }
-  item.setAttribute('data-menu-item-focus', '')
+  item.setAttribute('aria-selected', 'true')
   item.scrollIntoView({block: 'nearest'})
 }
 
@@ -259,12 +264,12 @@ function clearFocus(details: Element, menu: DetailsMenuElement) {
   if (details.hasAttribute('open')) return
 
   const state = states.get(menu)
-  const container = state ? state.container : null
-  if (!container) return
+  const control = state ? state.control : null
+  if (!control) return
 
-  container.removeAttribute('aria-activedescendant')
-  for (const el of menu.querySelectorAll('[role^="menuitem"][data-menu-item-focus]')) {
-    el.removeAttribute('data-menu-item-focus')
+  control.removeAttribute('aria-activedescendant')
+  for (const el of menu.querySelectorAll('[role^="menuitem"][aria-selected]')) {
+    el.removeAttribute('aria-selected')
   }
 }
 

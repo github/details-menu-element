@@ -21,7 +21,7 @@
       text-align: left;
       padding: 0;
     }
-    [role^="menuitem"][data-menu-item-focus] {
+    [role^="menuitem"][aria-selected="true"] {
       background: lightblue;
     }
     [role^="menuitem"]:hover {
@@ -68,8 +68,8 @@
 
   <details>
     <summary data-menu-button>Filter robots</summary>
-    <details-menu role="none">
-      <input autofocus aria-owns="filter-menu">
+    <details-menu role="none" input="filter-input">
+      <input autofocus aria-owns="filter-menu" id="filter-input">
       <div role="menu" id="filter-menu">
         <button type="submit" name="robot" value="Hubot" role="menuitemradio" data-menu-button-text>Hubot</button>
         <button type="submit" name="robot" value="Bender" role="menuitemradio" data-menu-button-text>Bender</button>

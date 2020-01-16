@@ -7,4 +7,7 @@ declare global {
   interface Window {
     DetailsMenuElement: typeof DetailsMenuElement
   }
+  interface HTMLElementTagNameMap {
+    'details-menu': DetailsMenuElement
+  }
 }

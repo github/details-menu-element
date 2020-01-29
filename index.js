@@ -289,6 +289,8 @@ function isMenuItem(el: Element): boolean {
 }
 
 function close(details: Element) {
+  const wasOpen = details.hasAttribute('open')
+  if (!wasOpen) return
   details.removeAttribute('open')
   const summary = details.querySelector('summary')
   if (summary) summary.focus()

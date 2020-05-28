@@ -1,5 +1,3 @@
-/* @flow strict */
-
 class DetailsMenuElement extends HTMLElement {
   constructor() {
     super()
@@ -67,13 +65,17 @@ class DetailsMenuElement extends HTMLElement {
 const states = new WeakMap()
 
 type Subscription = {unsubscribe(): void}
-const NullSubscription = {unsubscribe() {}}
+const NullSubscription = {
+  unsubscribe() {
+    /* Do nothing */
+  }
+}
 
 function fromEvent(
   target: EventTarget,
   eventName: string,
-  onNext: EventHandler,
-  options: EventListenerOptionsOrUseCapture = false
+  onNext: EventListenerOrEventListenerObject,
+  options: boolean | AddEventListenerOptions = false
 ): Subscription {
   target.addEventListener(eventName, onNext, options)
   return {
@@ -100,7 +102,7 @@ function loadFragment(details: Element, menu: DetailsMenuElement) {
   }
 }
 
-function focusOnOpen(details: Element): Array<Subscription> {
+function focusOnOpen(details: Element): Subscription[] {
   let isMouse = false
   const onmousedown = () => (isMouse = true)
   const onkeydown = () => (isMouse = false)
@@ -130,7 +132,7 @@ function closeCurrentMenu(details: Element) {
 
 function autofocus(details: Element): boolean {
   if (!details.hasAttribute('open')) return false
-  const input = details.querySelector('[autofocus]')
+  const input = details.querySelector<HTMLElement>('[autofocus]')
   if (input) {
     input.focus()
     return true
@@ -148,12 +150,14 @@ function focusFirstItem(details: Element) {
   if (target) target.focus()
 }
 
-function sibling(details: Element, next: boolean): ?HTMLElement {
+function sibling(details: Element, next: boolean): HTMLElement | null {
   const options = Array.from(
-    details.querySelectorAll('[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])')
+    details.querySelectorAll<HTMLElement>(
+      '[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])'
+    )
   )
   const selected = document.activeElement
-  const index = options.indexOf(selected)
+  const index = selected instanceof HTMLElement ? options.indexOf(selected) : -1
   const found = next ? options[index + 1] : options[index - 1]
   const def = next ? options[0] : options[options.length - 1]
   return found || def
@@ -183,11 +187,11 @@ function shouldCommit(details: Element, menu: DetailsMenuElement, event: Event) 
 function updateChecked(selected: Element, details: Element) {
   for (const el of details.querySelectorAll('[role="menuitemradio"], [role="menuitemcheckbox"]')) {
     const input = el.querySelector('input[type="radio"], input[type="checkbox"]')
-    let checkState = el === selected
+    let checkState = (el === selected).toString()
     if (input instanceof HTMLInputElement) {
-      checkState = input.indeterminate ? 'mixed' : input.checked
+      checkState = input.indeterminate ? 'mixed' : input.checked.toString()
     }
-    el.setAttribute('aria-checked', checkState.toString())
+    el.setAttribute('aria-checked', checkState)
   }
 }
 
@@ -273,7 +277,7 @@ function keydown(details: Element, menu: DetailsMenuElement, event: Event) {
     case 'Enter':
       {
         const selected = document.activeElement
-        if (selected && isMenuItem(selected) && selected.closest('details') === details) {
+        if (selected instanceof HTMLElement && isMenuItem(selected) && selected.closest('details') === details) {
           event.preventDefault()
           event.stopPropagation()
           selected.click()
@@ -309,7 +313,7 @@ function updateLabel(item: Element, details: Element) {
   }
 }
 
-function labelText(el: ?Element): ?string {
+function labelText(el: Element | null): string | null {
   if (!el) return null
   const textEl = el.hasAttribute('data-menu-button-text') ? el : el.querySelector('[data-menu-button-text]')
 
@@ -317,17 +321,26 @@ function labelText(el: ?Element): ?string {
   return textEl.getAttribute('data-menu-button-text') || textEl.textContent
 }
 
-function labelHTML(el: ?Element): ?string {
+function labelHTML(el: Element | null): string | null {
   if (!el) return null
   const contentsEl = el.hasAttribute('data-menu-button-contents') ? el : el.querySelector('[data-menu-button-contents]')
 
   return contentsEl ? contentsEl.innerHTML : null
 }
 
-function trackComposition(menu, event: Event) {
+function trackComposition(menu: Element, event: Event) {
   const state = states.get(menu)
   if (!state) return
   state.isComposing = event.type === 'compositionstart'
+}
+
+declare global {
+  interface Window {
+    DetailsMenuElement: typeof DetailsMenuElement
+  }
+  interface HTMLElementTagNameMap {
+    'details-menu': DetailsMenuElement
+  }
 }
 
 export default DetailsMenuElement

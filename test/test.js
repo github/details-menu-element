@@ -1,19 +1,19 @@
-describe('details-menu element', function() {
-  describe('element creation', function() {
-    it('creates from document.createElement', function() {
+describe('details-menu element', function () {
+  describe('element creation', function () {
+    it('creates from document.createElement', function () {
       const el = document.createElement('details-menu')
       assert.equal('DETAILS-MENU', el.nodeName)
       assert(el instanceof window.DetailsMenuElement)
     })
 
-    it('creates from constructor', function() {
+    it('creates from constructor', function () {
       const el = new window.DetailsMenuElement()
       assert.equal('DETAILS-MENU', el.nodeName)
     })
   })
 
-  describe('after tree insertion', function() {
-    beforeEach(function() {
+  describe('after tree insertion', function () {
+    beforeEach(function () {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
@@ -30,11 +30,11 @@ describe('details-menu element', function() {
       document.body.append(container)
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('has default attributes set', function() {
+    it('has default attributes set', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       const menu = details.querySelector('details-menu')
@@ -42,7 +42,7 @@ describe('details-menu element', function() {
       assert.equal(menu.getAttribute('role'), 'menu')
     })
 
-    it('opens and does not focus an item on mouse click', function() {
+    it('opens and does not focus an item on mouse click', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
 
@@ -53,7 +53,7 @@ describe('details-menu element', function() {
       assert.equal(summary, document.activeElement, 'mouse toggle open leaves summary focused')
     })
 
-    it('opens and focuses first item on summary enter', function() {
+    it('opens and focuses first item on summary enter', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
 
@@ -66,7 +66,7 @@ describe('details-menu element', function() {
       assert.equal(first, document.activeElement, 'toggle open focuses first item')
     })
 
-    it('opens and focuses first item on arrow down', function() {
+    it('opens and focuses first item on arrow down', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
 
@@ -80,7 +80,7 @@ describe('details-menu element', function() {
       assert.equal(first, document.activeElement, 'arrow focuses first item')
     })
 
-    it('opens and focuses last item on arrow up', function() {
+    it('opens and focuses last item on arrow up', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
 
@@ -94,7 +94,7 @@ describe('details-menu element', function() {
       assert.equal(last, document.activeElement, 'arrow focuses last item')
     })
 
-    it('navigates items with arrow keys', function() {
+    it('navigates items with arrow keys', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
 
@@ -114,7 +114,7 @@ describe('details-menu element', function() {
       assert.equal(first, document.activeElement, 'arrow up focuses first item')
     })
 
-    it('closes and focuses summary on escape', function() {
+    it('closes and focuses summary on escape', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
 
@@ -129,7 +129,7 @@ describe('details-menu element', function() {
       assert(!details.open, 'details toggles closed')
     })
 
-    it('allow propagation on escape if details is closed', function() {
+    it('allow propagation on escape if details is closed', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
 
@@ -141,7 +141,7 @@ describe('details-menu element', function() {
       assert.equal(summary.textContent, 'Propagated')
     })
 
-    it('updates the button label with text', function() {
+    it('updates the button label with text', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       const item = details.querySelector('button')
@@ -150,7 +150,7 @@ describe('details-menu element', function() {
       assert.equal(summary.textContent, 'Hubot')
     })
 
-    it('updates the button label with HTML', function() {
+    it('updates the button label with HTML', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       const item = details.querySelector('[data-menu-button-contents]')
@@ -160,7 +160,7 @@ describe('details-menu element', function() {
       assert.equal(summary.innerHTML, '<strong>Bender</strong>')
     })
 
-    it('fires events in order', function(done) {
+    it('fires events in order', function (done) {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       const menu = details.querySelector('details-menu')
@@ -184,7 +184,7 @@ describe('details-menu element', function() {
       assert(details.open)
     })
 
-    it('fires cancellable select event', function(done) {
+    it('fires cancellable select event', function (done) {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       const menu = details.querySelector('details-menu')
@@ -210,7 +210,7 @@ describe('details-menu element', function() {
       assert(details.open)
     })
 
-    it('does not trigger aria-disabled item', function() {
+    it('does not trigger aria-disabled item', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       let eventCounter = 0
@@ -230,7 +230,7 @@ describe('details-menu element', function() {
       assert(details.open, 'menu stays open')
     })
 
-    it('does not trigger disabled item', function() {
+    it('does not trigger disabled item', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       let eventCounter = 0
@@ -248,8 +248,8 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('mutually exclusive menu items as buttons', function() {
-    beforeEach(function() {
+  describe('mutually exclusive menu items as buttons', function () {
+    beforeEach(function () {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
@@ -264,11 +264,11 @@ describe('details-menu element', function() {
       document.body.append(container)
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('manages checked state and fires events', function() {
+    it('manages checked state and fires events', function () {
       const details = document.querySelector('details')
       const item = details.querySelector('button')
       let eventCounter = 0
@@ -282,8 +282,8 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('mutually exclusive menu items as labels', function() {
-    beforeEach(function() {
+  describe('mutually exclusive menu items as labels', function () {
+    beforeEach(function () {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
@@ -298,11 +298,11 @@ describe('details-menu element', function() {
       document.body.append(container)
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('manages checked state and fires events', function() {
+    it('manages checked state and fires events', function () {
       const details = document.querySelector('details')
       const item = details.querySelector('label')
       let eventCounter = 0
@@ -316,8 +316,8 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('with labels as menu item checkboxes', function() {
-    beforeEach(function() {
+  describe('with labels as menu item checkboxes', function () {
+    beforeEach(function () {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
@@ -332,11 +332,11 @@ describe('details-menu element', function() {
       document.body.append(container)
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('manages checked state and fires events', function() {
+    it('manages checked state and fires events', function () {
       const details = document.querySelector('details')
       const summary = document.querySelector('summary')
       const item = details.querySelector('label')
@@ -358,8 +358,8 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('with labels as menu item with indeterminate checkboxes', function() {
-    beforeEach(function() {
+  describe('with labels as menu item with indeterminate checkboxes', function () {
+    beforeEach(function () {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
@@ -374,11 +374,11 @@ describe('details-menu element', function() {
       document.body.append(container)
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('manages checked state and fires events', function() {
+    it('manages checked state and fires events', function () {
       const details = document.querySelector('details')
       const summary = document.querySelector('summary')
       const item = details.querySelector('label')
@@ -406,8 +406,8 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('with no valid menu items', function() {
-    beforeEach(function() {
+  describe('with no valid menu items', function () {
+    beforeEach(function () {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
@@ -421,11 +421,11 @@ describe('details-menu element', function() {
       document.body.append(container)
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('focus stays on summary', function() {
+    it('focus stays on summary', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
 
@@ -438,8 +438,8 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('opening the menu', function() {
-    beforeEach(function() {
+  describe('opening the menu', function () {
+    beforeEach(function () {
       const container = document.createElement('div')
       container.innerHTML = `
         <details class="parent">
@@ -459,11 +459,11 @@ describe('details-menu element', function() {
       document.body.append(container)
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('closes other open menus', function() {
+    it('closes other open menus', function () {
       const parent = document.querySelector('.parent')
       const sibling = document.querySelector('.sibling')
 
@@ -478,7 +478,7 @@ describe('details-menu element', function() {
       assert(!parent.open)
     })
 
-    it('does not close open parent menu', function() {
+    it('does not close open parent menu', function () {
       const parent = document.querySelector('.parent')
       const nested = document.querySelector('.nested')
 
@@ -494,8 +494,8 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('deferred loading menu content', function() {
-    beforeEach(function() {
+  describe('deferred loading menu content', function () {
+    beforeEach(function () {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
@@ -510,11 +510,11 @@ describe('details-menu element', function() {
       document.body.append(container)
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('fetches content on toggle', function() {
+    it('fetches content on toggle', function () {
       const details = document.querySelector('details')
       const loader = details.querySelector('include-fragment')
 
@@ -526,7 +526,7 @@ describe('details-menu element', function() {
       assert.equal('/test', loader.getAttribute('src'))
     })
 
-    it('fetches content on hover', function() {
+    it('fetches content on hover', function () {
       const details = document.querySelector('details')
       const loader = details.querySelector('include-fragment')
 
@@ -537,7 +537,7 @@ describe('details-menu element', function() {
       assert.equal('/test', loader.getAttribute('src'))
     })
 
-    it('does not fetch nested include-fragment', function() {
+    it('does not fetch nested include-fragment', function () {
       const details = document.querySelector('details')
       const loader = details.querySelector('include-fragment')
 
@@ -554,8 +554,8 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('with input[autofocus]', function() {
-    beforeEach(function() {
+  describe('with input[autofocus]', function () {
+    beforeEach(function () {
       const container = document.createElement('div')
       container.innerHTML = `
         <details>
@@ -571,11 +571,11 @@ describe('details-menu element', function() {
       document.body.append(container)
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('autofocuses on input on mouse click', function() {
+    it('autofocuses on input on mouse click', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       const menu = details.querySelector('details-menu')
@@ -589,7 +589,7 @@ describe('details-menu element', function() {
       assert.equal(input, document.activeElement, 'mouse toggle open leaves summary focused')
     })
 
-    it('autofocuses on input on keyboard activation', function() {
+    it('autofocuses on input on keyboard activation', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
       const input = details.querySelector('input')
@@ -603,8 +603,8 @@ describe('details-menu element', function() {
     })
   })
 
-  describe('closing the menu', function() {
-    beforeEach(function() {
+  describe('closing the menu', function () {
+    beforeEach(function () {
       const container = document.createElement('div')
       container.innerHTML = `
         <div class="dialog">
@@ -623,11 +623,11 @@ describe('details-menu element', function() {
       document.body.append(container)
     })
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = ''
     })
 
-    it('does not propagate the key event when a user closes the menu with esc', function() {
+    it('does not propagate the key event when a user closes the menu with esc', function () {
       const dialog = document.querySelector('.dialog')
       const details = dialog.querySelector('details')
       let dialogClosed = false

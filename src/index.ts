@@ -23,7 +23,7 @@ class DetailsMenuElement extends HTMLElement {
     this.setAttribute('src', value)
   }
 
-  connectedCallback() {
+  connectedCallback(): void {
     if (!this.hasAttribute('role')) this.setAttribute('role', 'menu')
 
     const details = this.parentElement
@@ -52,7 +52,7 @@ class DetailsMenuElement extends HTMLElement {
     states.set(this, {subscriptions, loaded: false, isComposing: false})
   }
 
-  disconnectedCallback() {
+  disconnectedCallback(): void {
     const state = states.get(this)
     if (!state) return
     states.delete(this)

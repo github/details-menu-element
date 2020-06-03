@@ -12,7 +12,7 @@ $ npm install @github/details-menu-element
 
 ### Script
 
-Import as ES modules:
+Import as a module:
 
 ```js
 import '@github/details-menu-element'

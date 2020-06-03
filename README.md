@@ -10,9 +10,22 @@ $ npm install @github/details-menu-element
 
 ## Usage
 
+### Script
+
+Import as a module:
+
 ```js
 import '@github/details-menu-element'
 ```
+
+With a script tag:
+
+```html
+<script type="module" src="./node_modules/@github/details-menu-element/dist/index.js">
+```
+
+### Markup
+
 
 ```html
 <details>

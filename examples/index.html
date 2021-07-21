@@ -24,6 +24,8 @@
   </style>
 </head>
 <body>
+  <h1>Base examples</h1>
+
   <details>
     <summary>Best robot: <span data-menu-button>Unknown</span></summary>
     <details-menu>
@@ -54,6 +56,20 @@
   <details>
     <summary data-menu-button>Favorite robots</summary>
     <details-menu>
+      <button type="submit" name="robot" value="Hubot" role="menuitemradio" data-menu-button-text>Hubot</button>
+      <button type="submit" name="robot" value="Bender" role="menuitemradio" data-menu-button-text>Bender</button>
+      <button type="submit" name="robot" value="BB-8" role="menuitemradio" data-menu-button-text>BB-8</button>
+    </details-menu>
+  </details>
+
+  <h1>Autofocus example</h1>
+  <p><code>summary</code> may have <code>autofocus</code> so it's the initially focused element in the page.</p>
+  <p>Then any focusable element inside the popup can declare autofocus too, so it gets focus when the popup is opened.</p>
+
+  <details>
+    <summary data-menu-button autofocus>Autofocus picker</summary>
+    <details-menu>
+      <input type="text" autofocus />
       <button type="submit" name="robot" value="Hubot" role="menuitemradio" data-menu-button-text>Hubot</button>
       <button type="submit" name="robot" value="Bender" role="menuitemradio" data-menu-button-text>Bender</button>
       <button type="submit" name="robot" value="BB-8" role="menuitemradio" data-menu-button-text>BB-8</button>

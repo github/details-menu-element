@@ -132,7 +132,7 @@ function closeCurrentMenu(details: Element) {
 
 function autofocus(details: Element): boolean {
   if (!details.hasAttribute('open')) return false
-  const input = details.querySelector<HTMLElement>('[autofocus]')
+  const input = details.querySelector<HTMLElement>('details-menu [autofocus]')
   if (input) {
     input.focus()
     return true

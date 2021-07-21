@@ -1,6 +1,6 @@
 {
   "name": "@github/details-menu-element",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A menu opened with a <details> button.",
   "main": "dist/index.js",
   "module": "dist/index.js",

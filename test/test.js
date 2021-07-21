@@ -601,6 +601,22 @@ describe('details-menu element', function () {
 
       assert.equal(input, document.activeElement, 'toggle open focuses on [autofocus]')
     })
+
+    it('summary autofocus should not impact with inner autofocus element', function () {
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const input = details.querySelector('input')
+
+      // Summary is the initial element of the entire page, while input is the initial element in the popup
+      summary.setAttribute('autofocus', '')
+
+      summary.focus()
+      details.open = true
+      summary.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}))
+      details.dispatchEvent(new CustomEvent('toggle'))
+
+      assert.equal(document.activeElement, input, 'toggle open focuses on [autofocus]')
+    })
   })
 
   describe('closing the menu', function () {

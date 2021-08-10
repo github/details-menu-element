@@ -279,6 +279,11 @@ describe('details-menu element', function () {
       assert.equal(item.getAttribute('aria-checked'), 'true')
       assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
       assert.equal(eventCounter, 1, 'selected event is fired once')
+
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(item.getAttribute('aria-checked'), 'true')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
+      assert.equal(eventCounter, 2, 'selected event is fired again')
     })
   })
 
@@ -313,6 +318,11 @@ describe('details-menu element', function () {
       assert.equal(item.getAttribute('aria-checked'), 'true')
       assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
       assert.equal(eventCounter, 1, 'selected event is fired once')
+
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      assert.equal(item.getAttribute('aria-checked'), 'true')
+      assert.equal(details.querySelectorAll('[aria-checked="true"]').length, 1)
+      assert.equal(eventCounter, 2, 'selected event is fired again')
     })
   })
 

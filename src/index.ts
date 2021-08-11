@@ -34,8 +34,8 @@ class DetailsMenuElement extends HTMLElement {
     const subscriptions = [
       fromEvent(details, 'compositionstart', e => trackComposition(this, e)),
       fromEvent(details, 'compositionend', e => trackComposition(this, e)),
-      fromEvent(details, 'click', e => shouldCommit(details, this, e)),
-      fromEvent(details, 'change', e => shouldCommit(details, this, e)),
+      fromEvent(details, 'click', e => shouldCommit(details, e)),
+      fromEvent(details, 'change', e => shouldCommit(details, e)),
       fromEvent(details, 'keydown', e => keydown(details, this, e)),
       fromEvent(details, 'toggle', () => loadFragment(details, this), {once: true}),
       fromEvent(details, 'toggle', () => closeCurrentMenu(details)),
@@ -161,7 +161,7 @@ function sibling(details: Element, next: boolean): HTMLElement | null {
 
 const ctrlBindings = navigator.userAgent.match(/Macintosh/)
 
-function shouldCommit(details: Element, menu: DetailsMenuElement, event: Event) {
+function shouldCommit(details: Element, event: Event) {
   const target = event.target
   if (!(target instanceof Element)) return
 

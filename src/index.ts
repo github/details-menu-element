@@ -174,15 +174,16 @@ function shouldCommit(details: Element, menu: DetailsMenuElement, event: Event) 
 
   if (event.type === 'click') {
     const menuitem = target.closest('[role="menuitem"], [role="menuitemradio"]')
+    if (!menuitem) return
 
     // Ignore double event caused by inputs nested in labels
-    if (menuitem?.tagName === 'LABEL' && target !== menuitem) return
+    if (menuitem.tagName === 'LABEL' && target !== menuitem) return
 
-    const input = menuitem?.querySelector('input')
+    const input = menuitem.querySelector('input')
     // An input inside a label will be committed as a change event (we assume it's a radio input),
     // unless the input is already checked, so we need to commit on click (to close the popup)
-    const onlyCommitOnChangeEvent = menuitem?.tagName === 'LABEL' && input && !input.checked
-    if (menuitem && !onlyCommitOnChangeEvent) {
+    const onlyCommitOnChangeEvent = menuitem.tagName === 'LABEL' && input && !input.checked
+    if (!onlyCommitOnChangeEvent) {
       commit(menuitem, details)
     }
   } else if (event.type === 'change') {

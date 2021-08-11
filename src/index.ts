@@ -1,8 +1,4 @@
 class DetailsMenuElement extends HTMLElement {
-  constructor() {
-    super()
-  }
-
   get preload(): boolean {
     return this.hasAttribute('preload')
   }

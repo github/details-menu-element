@@ -172,10 +172,14 @@ function shouldCommit(details: Element, event: Event) {
     const menuitem = target.closest('[role="menuitem"], [role="menuitemradio"]')
     if (!menuitem) return
 
-    // Ignore double event caused by inputs nested in labels
-    if (menuitem.tagName === 'LABEL' && target !== menuitem) return
-
     const input = menuitem.querySelector('input')
+
+    // Ignore double event caused by inputs nested in labels
+    // Known issue: This will wrongly ignore a legit click event on an already checked input,
+    // but inputs are not expected to be visible in the menu items.
+    // I've found no way to discriminate the legit event from the echo one, and we don't want to trigger the selected event twice.
+    if (menuitem.tagName === 'LABEL' && target === input) return
+
     // An input inside a label will be committed as a change event (we assume it's a radio input),
     // unless the input is already checked, so we need to commit on click (to close the popup)
     const onlyCommitOnChangeEvent = menuitem.tagName === 'LABEL' && input && !input.checked

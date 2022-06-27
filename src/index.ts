@@ -39,6 +39,7 @@ class DetailsMenuElement extends HTMLElement {
       fromEvent(details, 'keydown', e => keydown(details, this, e)),
       fromEvent(details, 'toggle', () => loadFragment(details, this), {once: true}),
       fromEvent(details, 'toggle', () => closeCurrentMenu(details)),
+      fromEvent(details, 'toggle', () => scrollIntoView(details)),
       this.preload
         ? fromEvent(details, 'mouseover', () => loadFragment(details, this), {once: true})
         : NullSubscription,
@@ -135,6 +136,22 @@ function autofocus(details: Element): boolean {
   } else {
     return false
   }
+}
+
+// Scroll entire details menu into view, center on it.
+function scrollIntoView(details: Element): boolean {
+  if (!details.hasAttribute('open')) return false
+  const detailsMenu = details.querySelector<HTMLElement>('details-menu [scrollIntoView]')
+  if (detailsMenu) {
+    const innerMenu = detailsMenu.closest('[role="menu"], [role="radiogroup"]')
+    if (innerMenu) {
+      innerMenu.scrollIntoView({behavior: 'smooth', block: 'center'})
+    } else {
+      return false
+    }
+    return true
+  }
+  return false
 }
 
 // Focus first item unless an item is already focused.

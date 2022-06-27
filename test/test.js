@@ -629,6 +629,45 @@ describe('details-menu element', function () {
     })
   })
 
+  describe('with input[scrollIntoView]', function () {
+    beforeEach(function () {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary>Scroll into view radio group</summary>
+          <details-menu scrollIntoView>
+            <ul role="radiogroup">
+              <li role="radio">
+                <label><input type="radio" name="robot" value="Hubot">Hubot</label>
+              </li>
+              <li role="radio">
+                <label><input type="radio" name="robot" value="Bender">Bender</label>
+              </li>
+              <li role="radio">
+                <label><input type="radio" name="robot" value="BB-8">BB-8</label>
+              </li>
+            </ul>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function () {
+      document.body.innerHTML = ''
+    })
+
+    it('scrolls the inner menu into view on mouse click', function () {
+      const details = document.querySelector('details')
+      const detailsMenu = details.querySelector('details-menu')
+      const innerMenu = detailsMenu.closest('[role="menu"]')
+
+      details.open = true
+      details.dispatchEvent(new CustomEvent('toggle'))
+      assert.equal(0, innerMenu.scrollTop)
+    })
+  })
+
   describe('closing the menu', function () {
     beforeEach(function () {
       const container = document.createElement('div')

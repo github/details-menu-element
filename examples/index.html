@@ -85,6 +85,23 @@
       </details-menu>
     </details>
 
+    <details>
+      <summary>Scroll into view radio group</summary>
+      <details-menu scrollIntoView>
+        <ul role="radiogroup">
+          <li role="radio">
+            <label><input type="radio" name="robot" value="Hubot">Hubot</label>
+          </li>
+          <li role="radio">
+            <label><input type="radio" name="robot" value="Bender">Bender</label>
+          </li>
+          <li role="radio">
+            <label><input type="radio" name="robot" value="BB-8">BB-8</label>
+          </li>
+        </ul>
+      </details-menu>
+    </details>
+
     <script type="text/javascript">
       document.addEventListener('details-menu-selected', e => console.log(e))
     </script>

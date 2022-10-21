@@ -149,7 +149,7 @@ function focusFirstItem(details: Element) {
 function sibling(details: Element, next: boolean): HTMLElement | null {
   const options = Array.from(
     details.querySelectorAll<HTMLElement>(
-      '[role^="menuitem"]:not([hidden]):not([disabled]):not([aria-disabled="true"])'
+      '[role^="menuitem"]:not([hidden])'
     )
   )
   const selected = document.activeElement

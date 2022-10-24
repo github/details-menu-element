@@ -90,7 +90,7 @@ describe('details-menu element', function () {
       summary.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}))
       assert(details.open, 'menu is open')
 
-      const last = [...details.querySelectorAll('[role="menuitem"]:not([disabled]):not([aria-disabled])')].pop()
+      const last = [...details.querySelectorAll('[role="menuitem"]:not([disabled])')].pop()
       assert.equal(last, document.activeElement, 'arrow focuses last item')
     })
 
@@ -219,7 +219,7 @@ describe('details-menu element', function () {
       summary.dispatchEvent(new MouseEvent('click', {bubbles: true}))
       details.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}))
 
-      const notDisabled = details.querySelectorAll('[role="menuitem"]')[2]
+      const notDisabled = details.querySelectorAll('[role="menuitem"]')[3]
       assert.equal(notDisabled, document.activeElement, 'arrow focuses on the last non-disabled item')
 
       const disabled = details.querySelector('[aria-disabled="true"]')
@@ -423,7 +423,6 @@ describe('details-menu element', function () {
         <details>
           <summary>Click</summary>
           <details-menu>
-            <button type="button" role="menuitem" aria-disabled="true">Hubot</button>
             <button type="button" role="menuitem" disabled>Bender</button>
           </details-menu>
         </details>

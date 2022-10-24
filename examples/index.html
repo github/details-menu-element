@@ -22,10 +22,14 @@
         text-align: left;
         padding: 0;
       }
+      [aria-disabled="true"] {
+        color: gray;
+      }
     </style>
   </head>
   <body>
-    <h1>Base examples</h1>
+    <h1>Examples</h1>
+    <h2>Base examples</h2>
 
     <details>
       <summary>Best robot: <span data-menu-button>Unknown</span></summary>
@@ -69,7 +73,19 @@
       </details-menu>
     </details>
 
-    <h1>Autofocus example</h1>
+    <h2>`aria-disabled="true" example</h2>
+    <p>menu items with <code>aria-disabled="true"</code> should be keyboard navigable</p>
+    <details>
+      <summary data-menu-button autofocus>Least favorite robots</summary>
+      <details-menu>
+        <input type="text" autofocus />
+        <button name="robot" value="Hubot" aria-disabled="true" role="menuitemradio" data-menu-button-text>Hubot</button>
+        <button name="robot" value="Bender" role="menuitemradio" data-menu-button-text>Bender</button>
+        <button name="robot" value="BB-8" role="menuitemradio" data-menu-button-text>BB-8</button>
+      </details-menu>
+    </details>
+
+    <h2>Autofocus example</h2>
     <p><code>summary</code> may have <code>autofocus</code> so it's the initially focused element in the page.</p>
     <p>
       Then any focusable element inside the popup can declare autofocus too, so it gets focus when the popup is opened.

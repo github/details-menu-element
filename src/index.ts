@@ -1,4 +1,8 @@
 class DetailsMenuElement extends HTMLElement {
+  static setCSPTrustedTypesPolicy(policy: CSPTrustedTypesPolicy | Promise<CSPTrustedTypesPolicy> | null): void {
+    cspTrustedTypesPolicyPromise = policy === null ? policy : Promise.resolve(policy)
+  }
+
   get preload(): boolean {
     return this.hasAttribute('preload')
   }
@@ -57,6 +61,18 @@ class DetailsMenuElement extends HTMLElement {
     }
   }
 }
+
+// csp trusted types interface
+export interface CSPTrustedTypesPolicy {
+  createHTML: (s: string | null) => CSPTrustedHTMLToStringable
+}
+
+interface CSPTrustedHTMLToStringable {
+  toString: () => string
+}
+
+// function to be used to create a trusted types policy
+let cspTrustedTypesPolicyPromise: Promise<CSPTrustedTypesPolicy> | null = null
 
 const states = new WeakMap()
 
@@ -312,8 +328,22 @@ function updateLabel(item: Element, details: Element) {
   if (text) {
     button.textContent = text
   } else {
-    const html = labelHTML(item)
-    if (html) button.innerHTML = html
+    let html = labelHTML(item)
+    if (cspTrustedTypesPolicyPromise) {
+      // eslint-disable-next-line no-console
+      console.log('Using Trusted Types policy to sanitize HTML')
+      // eslint-disable-next-line github/no-then
+      cspTrustedTypesPolicyPromise.then(policy => {
+        html = policy.createHTML(html) as string
+        if (html) button.innerHTML = html
+        // eslint-disable-next-line no-console
+        console.log('HTML sanitized', html)
+      })
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('Setting HTML', html)
+      if (html) button.innerHTML = html
+    }
   }
 }
 

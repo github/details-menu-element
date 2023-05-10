@@ -675,4 +675,47 @@ describe('details-menu element', function () {
       assert.isFalse(dialogClosed)
     })
   })
+
+  describe('updating a label with trusted HTML', function () {
+    beforeEach(function () {
+      const container = document.createElement('div')
+      container.innerHTML = `
+        <details>
+          <summary data-menu-button><em>Click</em></summary>
+          <details-menu>
+            <button type="button" role="menuitem" data-menu-button-text>Hubot</button>
+            <button type="button" role="menuitem" data-menu-button-contents><strong>Bender</strong></button>
+            <button type="button" role="menuitem">BB-8</button>
+            <button type="button" role="menuitem" data-menu-button-text aria-disabled="true">WALL-E</button>
+            <button type="button" role="menuitem" disabled>R2-D2</button>
+          </details-menu>
+        </details>
+      `
+      document.body.append(container)
+    })
+
+    afterEach(function () {
+      document.body.innerHTML = ''
+    })
+
+    it('updates the button label with HTML', function () {
+      const calls = []
+      // eslint-disable-next-line github/unescaped-html-literal
+      const html = '<strong>Tin Man</strong>'
+      window.DetailsMenuElement.setCSPTrustedTypesPolicy({
+        createHTML(string) {
+          calls.push(string)
+          return html
+        }
+      })
+      const details = document.querySelector('details')
+      const summary = details.querySelector('summary')
+      const item = details.querySelector('[data-menu-button-contents]')
+      assert.equal(summary.textContent, 'Click')
+      item.dispatchEvent(new MouseEvent('click', {bubbles: true}))
+      // eslint-disable-next-line github/unescaped-html-literal
+      assert.equal(summary.innerHTML, '<strong>Tin Man</strong>')
+      assert.equal(calls.length, 1)
+    })
+  })
 })

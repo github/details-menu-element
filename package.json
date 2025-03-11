@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@github/prettier-config": "0.0.4",
+    "@types/node": "^22.13.10",
     "chai": "^4.3.4",
     "eslint": "^7.32.0",
     "eslint-plugin-github": "^4.2.0",
@@ -36,8 +37,8 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-mocha": "^2.0.1",
     "karma-mocha-reporter": "^2.2.5",
-    "mocha": "^9.0.3",
-    "typescript": "^4.3.5"
+    "mocha": "^11.1.0",
+    "typescript": "^5.8.2"
   },
   "eslintIgnore": [
     "dist/"

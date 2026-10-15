@@ -114,6 +114,29 @@ describe('details-menu element', function () {
       assert.equal(first, document.activeElement, 'arrow up focuses first item')
     })
 
+    it('skips items belonging to a closed nested menu when navigating', function () {
+      const details = document.querySelector('details')
+      details.open = true
+      const [first, second] = details.querySelectorAll('[role="menuitem"]')
+      const nested = document.createElement('details')
+      const summary = document.createElement('summary')
+      summary.textContent = 'More'
+      const menu = document.createElement('details-menu')
+      const item = document.createElement('button')
+      item.setAttribute('role', 'menuitem')
+      item.textContent = 'Nested'
+      menu.append(item)
+      nested.append(summary, menu)
+      first.after(nested)
+      first.focus()
+
+      first.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}))
+      assert.equal(document.activeElement, second)
+
+      second.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}))
+      assert.equal(document.activeElement, first)
+    })
+
     it('closes and focuses summary on escape', function () {
       const details = document.querySelector('details')
       const summary = details.querySelector('summary')
